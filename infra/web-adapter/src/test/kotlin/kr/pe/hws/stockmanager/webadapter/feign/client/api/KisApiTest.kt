@@ -2,10 +2,7 @@ package kr.pe.hws.stockmanager.webadapter.feign.client.api
 
 import kr.pe.hws.stockmanager.api.InternalApiApplication
 import kr.pe.hws.stockmanager.api.kis.index.IndexType
-import kr.pe.hws.stockmanager.redis.repository.RestKisTokenRepository
-import kr.pe.hws.stockmanager.webadapter.feign.client.KisApiFeignClient
 import kr.pe.hws.stockmanager.webadapter.fetcher.KisApiFetcher
-import kr.pe.hws.stockmanager.webadapter.utils.KisApiUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import kotlin.test.Test
