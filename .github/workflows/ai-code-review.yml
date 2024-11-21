@@ -39,7 +39,7 @@ jobs:
       - name: Run Kotlin script for OpenAI code review
         run: |
           # 5.1. Kotlin 코드 작성
-          cat <<EOF > review_code.kt
+          echo '
           import okhttp3.*
           import java.io.IOException
           import org.json.JSONObject
@@ -62,13 +62,13 @@ jobs:
           
           val request = Request.Builder()
               .url("https://api.openai.com/v1/completions")
-              .addHeader("Authorization", "Bearer $openaiApiKey")  # Authorization 헤더에 API 키 추가
+              .addHeader("Authorization", "Bearer \$openaiApiKey")  # Authorization 헤더에 API 키 추가
               .post(body)
               .build()
           
           client.newCall(request).enqueue(object : Callback {
               override fun onFailure(call: Call, e: IOException) {
-                  println("Request failed: ${e.message}")
+                  println("Request failed: \${e.message}")
               }
           
               override fun onResponse(call: Call, response: Response) {
@@ -80,13 +80,13 @@ jobs:
                               .getJSONObject(0)
                               .getString("text")
                       }
-                      println("AI Review: $aiReview")
+                      println("AI Review: \${aiReview}")
                   } else {
-                      println("Request failed with status code: ${response.code()}")
+                      println("Request failed with status code: \${response.code()}")
                   }
               }
           })
-          EOF
+          ' > review_code.kt  # 파일에 코드 저장
 
           # 5.2. Kotlin 코드 컴파일 및 실행
           kotlinc review_code.kt -include-runtime -d review_code.jar  # Kotlin 코드 컴파일
