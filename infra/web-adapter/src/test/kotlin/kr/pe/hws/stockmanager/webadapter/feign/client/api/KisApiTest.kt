@@ -12,21 +12,19 @@ import kotlin.test.Test
 
 @SpringBootTest(classes = [InternalApiApplication::class])
 class KisApiTest {
-    @Autowired
-    private lateinit var restKisTokenRepositoryMocked: RestKisTokenRepository
 
     @Autowired
     private lateinit var fetcher: KisApiFetcher
 
-    @Autowired
-    private lateinit var kisApiFeignClient: KisApiFeignClient
-
-    @Autowired
-    private lateinit var kisApiUtils: KisApiUtils
+    @Test
+    fun getKospiIndexChart() {
+        val chart = fetcher.fetchKrIndexChart(IndexType.KOSPI)
+        println(chart)
+    }
 
     @Test
-    fun getKrIndexChart() {
-        val chart = fetcher.fetchKrIndexChart(IndexType.KOSPI)
+    fun getKosdaqIndexChart() {
+        val chart = fetcher.fetchKrIndexChart(IndexType.KOSDAQ)
         println(chart)
     }
 
