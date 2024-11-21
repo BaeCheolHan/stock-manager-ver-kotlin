@@ -16,7 +16,7 @@ jobs:
       - name: Set up Java (Kotlin uses JVM)
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: '17'
 
       # Step 3: Install Gradle (if necessary) and build the project
       - name: Install Gradle
@@ -52,7 +52,7 @@ jobs:
           val mediaType = MediaType.parse("application/json")
           val body = RequestBody.create(mediaType, """
           {
-            "model": "gpt-4",
+            "model": "gpt-3.5-turbo",
             "prompt": "Review this code for quality and suggest improvements:\n\n$prDiff",
             "max_tokens": 1000,
             "temperature": 0.5
