@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3  # 리포지토리 코드 체크아웃
+        with:
+          submodules: 'true'  # submodule 포함하여 체크아웃
 
       - name: Set up Java (Kotlin uses JVM)
         uses: actions/setup-java@v2  # Java 17 설정
