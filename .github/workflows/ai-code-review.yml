@@ -31,13 +31,14 @@ jobs:
           source "$HOME/.sdkman/bin/sdkman-init.sh"  # SDKMAN 초기화
           sdk install kotlin  # Kotlin 설치
 
-      # 4. Gradle 빌드 실행
-      - name: Build with Gradle
-        run: ./gradlew build -x test # Gradle 빌드 실행
+      # 4. Gradle 빌드 실행 (테스트 건너뛰기)
+      - name: Build with Gradle (skip tests)
+        run: ./gradlew build -x test  # 테스트를 건너뛰고 빌드 실행
 
       # 5. OpenAI 코드 리뷰 요청 및 실행
       - name: Run Kotlin script for OpenAI code review
         run: |
+          # 5.1. Kotlin 코드 작성
           cat <<EOF > review_code.kt
           import okhttp3.*
           import java.io.IOException
@@ -86,7 +87,7 @@ jobs:
               }
           })
           EOF
-          
-          # 6. Kotlin 스크립트 컴파일 및 실행
-          kotlinc review_code.kt -include-runtime -d review_code.jar
-          java -jar review_code.jar
+
+          # 5.2. Kotlin 코드 컴파일 및 실행
+          kotlinc review_code.kt -include-runtime -d review_code.jar  # Kotlin 코드 컴파일
+          java -jar review_code.jar  # 컴파일된 JAR 파일 실행
