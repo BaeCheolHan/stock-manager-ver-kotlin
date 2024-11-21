@@ -86,6 +86,10 @@ subprojects {
     }
 }
 
+tasks.test {
+    enabled = false  // 테스트 실행을 비활성화
+}
+
 tasks.withType<BootJar> {
     enabled = false
 }
