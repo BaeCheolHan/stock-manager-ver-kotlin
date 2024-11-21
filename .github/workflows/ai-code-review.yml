@@ -1,0 +1,92 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Kotlin
+      - name: Set up Java (Kotlin uses JVM)
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      # Step 3: Install Gradle (if necessary) and build the project
+      - name: Install Gradle
+        run: |
+          curl -s https://get.sdkman.io | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install gradle
+          gradle build
+
+      # Step 4: Get PR diff (Get the changes made in the PR)
+      - name: Get PR diff
+        id: pr_diff
+        run: |
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3.diff" \
+               -o pr.diff \
+               "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
+
+      # Step 5: Call OpenAI's API to review the code
+      - name: Run Kotlin script for OpenAI code review
+        run: |
+          cat <<EOF > review_code.kt
+          import okhttp3.*
+          import java.io.IOException
+          import org.json.JSONObject
+
+          val openaiApiKey = System.getenv("OPENAI_API_KEY")
+          val client = OkHttpClient()
+
+          // Read the PR diff from file
+          val prDiff = java.io.File("pr.diff").readText()
+
+          val mediaType = MediaType.parse("application/json")
+          val body = RequestBody.create(mediaType, """
+          {
+            "model": "gpt-4",
+            "prompt": "Review this code for quality and suggest improvements:\n\n$prDiff",
+            "max_tokens": 1000,
+            "temperature": 0.5
+          }
+          """)
+
+          val request = Request.Builder()
+              .url("https://api.openai.com/v1/completions")
+              .addHeader("Authorization", "Bearer $openaiApiKey")
+              .post(body)
+              .build()
+
+          client.newCall(request).enqueue(object : Callback {
+              override fun onFailure(call: Call, e: IOException) {
+                  println("Request failed: ${e.message}")
+              }
+
+              override fun onResponse(call: Call, response: Response) {
+                  if (response.isSuccessful) {
+                      val responseBody = response.body()?.string()
+                      val aiReview = responseBody?.let {
+                          val jsonResponse = JSONObject(it)
+                          jsonResponse.getJSONArray("choices")
+                              .getJSONObject(0)
+                              .getString("text")
+                      }
+                      println("AI Review: $aiReview")
+                  } else {
+                      println("Request failed with status code: ${response.code()}")
+                  }
+              }
+          })
+          EOF
+
+          # Run the Kotlin script
+          kotlinc review_code.kt -include-runtime -d review_code.jar
+          java -jar review_code.jar

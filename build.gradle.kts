@@ -43,6 +43,8 @@ subprojects {
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         api("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2") // Kotlin 지원
         api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2") // Java Time 지원
+        implementation("com.squareup.okhttp3:okhttp:4.9.3")
+        implementation("org.json:json:20210307")
     }
 
 
