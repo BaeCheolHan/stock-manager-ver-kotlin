@@ -111,7 +111,7 @@ object DailyIndexChartPriceWrapper {
             get() = modYn == "Y"
     }
 
-    fun DailyIndexChartResponse.toDomain(indexType: IndexType): IndexChart.DailyIndexChart<IndexChart.ChartSummary> {
+    fun DailyIndexChartResponse.toDomain(indexType: IndexType): IndexChart.DailyIndexChart {
         return IndexChart.DailyIndexChart(
             responseCode = rtCd,
             messageCode = msgCd,

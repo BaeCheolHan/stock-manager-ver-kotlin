@@ -2,12 +2,12 @@
 package kr.pe.hws.stockmanager.api.kis.index
 
 object IndexChart {
-    data class DailyIndexChart<T>(
+    data class DailyIndexChart(
         val responseCode: String,
         val messageCode: String,
         val message: String,
         val indexType: String,
-        val summary: T,
+        val summary: ChartSummary,
         val details: List<ChartDetail>
     )
 
