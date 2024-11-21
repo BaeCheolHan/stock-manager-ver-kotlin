@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v2  # Java 17 설정
         with:
           java-version: '17'  # Java 17 버전 사용
-          distribution: 'adoptopenjdk'  # AdoptOpenJDK 배포판 사용 (다른 배포판 가능: 'openjdk', 'zulu' 등)
+          distribution: 'corretto'  # AdoptOpenJDK 배포판 사용 (다른 배포판 가능: 'openjdk', 'zulu' 등)
 
       # 3. Kotlin 설치 (SDKMAN 사용)
       - name: Install Kotlin using SDKMAN
