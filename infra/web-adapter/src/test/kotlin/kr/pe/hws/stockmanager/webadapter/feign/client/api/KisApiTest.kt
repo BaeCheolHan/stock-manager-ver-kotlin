@@ -31,4 +31,10 @@ class KisApiTest {
         println(chart)
     }
 
+    @Test
+    fun getNasdaqIndexChart() {
+        val chart = fetcher.fetchOverSeaIndexChart(IndexType.NASDAQ)
+        println(chart)
+    }
+
 }
