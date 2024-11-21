@@ -6,7 +6,7 @@ object IndexChart {
         val responseCode: String,
         val messageCode: String,
         val message: String,
-        val indexType: IndexType,
+        val indexType: String,
         val summary: T,
         val details: List<ChartDetail>
     )

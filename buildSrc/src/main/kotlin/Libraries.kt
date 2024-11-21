@@ -16,4 +16,12 @@ object Libraries {
         const val reflect = "org.jetbrains.kotlin:kotlin-reflect"
     }
 
+    object Test {
+        const val kotestRunnerJunit5 = "io.kotest:kotest-runner-junit5:${Versions.Test.kotest}"
+        const val kotestAssertitionsCore = "io.kotest:kotest-assertions-core:${Versions.Test.kotest}"
+        const val kotestExtensionsSpring =
+            "io.kotest.extensions:kotest-extensions-spring:${Versions.Test.kotestSpringExtension}"
+        const val mockk = "io.mockk:mockk:${Versions.Test.mockk}"
+    }
+
 }

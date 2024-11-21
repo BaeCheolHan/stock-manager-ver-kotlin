@@ -34,16 +34,26 @@ subprojects {
     }
 
     dependencies {
-        testImplementation(project(":app:api"))
+        implementation(Libraries.Spring.bootStarterValidation)
+        testImplementation(Libraries.Spring.bootStarterTest)
+        testImplementation(Libraries.Test.kotestRunnerJunit5)
+        testImplementation(Libraries.Test.kotestAssertitionsCore)
+        testImplementation(Libraries.Test.kotestExtensionsSpring)
+        testImplementation(Libraries.Test.mockk)
         testImplementation("org.jetbrains.kotlin:kotlin-test")
-        api(Libraries.Spring.bootStarterTest)
-        api(Libraries.Kotlin.jackson)
         api("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2") // Kotlin 지원
         api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2") // Java Time 지원
     }
 
+
+
+
     val bootJar = tasks.bootJar.get()
     val jar = tasks.jar.get()
+
+    if (!project.path.startsWith(":app:")) {
+        tasks.withType<BootJar> { enabled = false }
+    }
 
     if (project.path.startsWith(":app:")) {
         bootJar.enabled = true

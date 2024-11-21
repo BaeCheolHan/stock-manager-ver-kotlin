@@ -116,7 +116,7 @@ object DailyIndexChartPriceWrapper {
             responseCode = rtCd,
             messageCode = msgCd,
             message = msg1,
-            indexType = indexType,
+            indexType = indexType.id,
             summary = summary.toDomain(),
             details = details.map { it.toDomain() },
         )

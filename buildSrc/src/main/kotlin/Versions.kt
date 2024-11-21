@@ -7,4 +7,10 @@ object Versions {
         const val dependencyManagementPlugin = "1.1.6"
         const val cloudDependencyManagement = "2023.0.3"
     }
+
+    object Test {
+        const val kotest = "5.5.0"
+        const val kotestSpringExtension = "1.1.2"
+        const val mockk = "1.13.4"
+    }
 }

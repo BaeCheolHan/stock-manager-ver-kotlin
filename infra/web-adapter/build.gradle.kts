@@ -3,21 +3,24 @@ dependencyManagement {
         mavenBom(Libraries.Spring.cloud)
     }
 }
-
 dependencies {
-    api(project(Modules.domain))
-    api(project(Modules.Infra.redis))
-    implementation(Libraries.Spring.openfeign)
+    api(Libraries.Spring.openfeign)
     implementation(Libraries.Spring.bootStarterWeb)
-    implementation(Libraries.Kotlin.jackson)
+    implementation(project(Modules.domain))
+    implementation(project(Modules.Infra.redis))
+    testImplementation(Libraries.Spring.bootStarterTest)
+    // JUnit 5
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation(project(Modules.api))
 }
 
 tasks.register<Copy>("copy-dev") {
-    from(file("../../StockManager-private/resources/dev/application-api.yml"))
-    into("/src/main/resources")
+    from(file("$projectDir/../../StockManager-private/resources/dev/application-api.yml"))
+    into("$projectDir/src/main/resources")
 }
 
 tasks.register<Copy>("copy-prod") {
-    from(file("../../StockManager-private/resources/prod/application-api.yml"))
-    into("/src/main/resources")
+    from(file("$projectDir/../../StockManager-private/resources/prod/application-api.yml"))
+    into("$projectDir/src/main/resources")
 }

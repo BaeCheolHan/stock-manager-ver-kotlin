@@ -1,6 +1,6 @@
 dependencies {
     api(Libraries.Spring.bootStarterDataMongodb)
-    api(project(Modules.domain))
+    implementation(project(Modules.domain))
 }
 
 tasks.register<Copy>("copy-dev") {

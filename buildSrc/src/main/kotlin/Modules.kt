@@ -1,6 +1,7 @@
 object Modules {
 
     const val domain = ":domain"
+    const val api = ":app:api"
 
     object Infra {
         const val rdb = ":infra:rdb"

@@ -11,6 +11,7 @@ import kr.pe.hws.stockmanager.webadapter.feign.client.KisApiRequest
 import kr.pe.hws.stockmanager.webadapter.utils.KisApiUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.test.Test

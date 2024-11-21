@@ -12,8 +12,8 @@ allOpen {
 
 dependencies {
     api(Libraries.Spring.bootStarterDataJpa)
-    api(project(Modules.domain))
     implementation("org.mariadb.jdbc:mariadb-java-client:3.3.2")
+    implementation(project(Modules.domain))
 
     // QueryDSL 설정
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
@@ -39,3 +39,15 @@ idea {
         generatedSourceDirs.add(kaptMain)
     }
 }
+
+
+tasks.register<Copy>("copy-dev") {
+    from(file("$projectDir/../../StockManager-private/resources/dev/application-rdb.yml"))
+    into("$projectDir/src/main/resources")
+}
+
+tasks.register<Copy>("copy-prod") {
+    from(file("$projectDir/../../StockManager-private/resources/prod/application-rdb.yml"))
+    into("$projectDir/src/main/resources")
+}
+
