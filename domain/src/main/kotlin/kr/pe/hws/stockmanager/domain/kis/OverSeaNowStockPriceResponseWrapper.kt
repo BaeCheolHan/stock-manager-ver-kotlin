@@ -1,4 +1,4 @@
-package kr.pe.hws.stockmanager.api.kis
+package kr.pe.hws.stockmanager.domain.kis
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
