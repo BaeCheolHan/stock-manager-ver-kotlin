@@ -1,8 +1,8 @@
 
-package kr.pe.hws.stockmanager.api.kis.index
+package kr.pe.hws.stockmanager.domain.kis.index
 
 object IndexChart {
-    data class DailyIndexChart(
+    data class IndexChart(
         val responseCode: String,
         val messageCode: String,
         val message: String,

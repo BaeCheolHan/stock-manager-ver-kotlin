@@ -1,4 +1,4 @@
-package kr.pe.hws.stockmanager.api.kis.index
+package kr.pe.hws.stockmanager.domain.kis.constants
 
 enum class IndexType (val id: String, val code: String, val national: National) {
     KOSPI("KOSPI", "0001", National.KR),

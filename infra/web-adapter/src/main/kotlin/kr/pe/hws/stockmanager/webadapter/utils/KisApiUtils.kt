@@ -3,8 +3,8 @@ package kr.pe.hws.stockmanager.webadapter.utils
 import jakarta.servlet.http.HttpServletResponse
 import kr.pe.hws.stockmanager.redis.hash.RestKisToken
 import kr.pe.hws.stockmanager.redis.repository.RestKisTokenRepository
+import kr.pe.hws.stockmanager.webadapter.dto.KisApiRequests
 import kr.pe.hws.stockmanager.webadapter.feign.client.KisApiFeignClient
-import kr.pe.hws.stockmanager.webadapter.feign.client.KisApiRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
@@ -29,7 +29,7 @@ class KisApiUtils(
 
     private fun fetchAndSaveNewToken(): RestKisToken {
         val response = kisApiFeignClient.getKisApiToken(
-            KisApiRequest.KisTokenGenerateRequest(
+            KisApiRequests.KisTokenGenerateRequest(
                 appKey,
                 appSecret
             )

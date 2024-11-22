@@ -1,4 +1,4 @@
-package kr.pe.hws.stockmanager.api.token
+package kr.pe.hws.stockmanager.domain.token
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming

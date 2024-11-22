@@ -1,6 +1,6 @@
 package kr.pe.hws.stockmanager.redis.hash
 
-import kr.pe.hws.stockmanager.api.token.ApiToken
+import kr.pe.hws.stockmanager.domain.token.ApiToken
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.TimeToLive
