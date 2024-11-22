@@ -2,10 +2,13 @@ package kr.pe.hws.stockmanager.webadapter.fetcher
 
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChart
+import kr.pe.hws.stockmanager.domain.kis.stock.OverSeaStockPrice
 import kr.pe.hws.stockmanager.domain.kis.stock.StockVolumeRank
 import kr.pe.hws.stockmanager.webadapter.constants.KisApiTransactionId
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto.toDomain
+import kr.pe.hws.stockmanager.webadapter.dto.KisApiStockPriceDto
+import kr.pe.hws.stockmanager.webadapter.dto.KisApiStockPriceDto.toDomain
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiVolumeRankDto
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiVolumeRankDto.toDomain
 import kr.pe.hws.stockmanager.webadapter.feign.client.KisApiFeignClient
@@ -45,6 +48,15 @@ class KisApiFetcher(
         }
     }
 
+    fun fetchOverSeaNowStockPrice(market: String, symbol: String) {
+        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.KR_VOLUME_RANK.getTransactionId())
+        headers.add("custtype", "P")
+        val request = createOverSeaStockPriceRequest(market, symbol)
+        val response = kisApiFeignClient.getOverSeaStockPrice(headers, request)
+        println(response)
+//        return response.details.toDomain()
+    }
+
     private fun createIndexChartRequest(marketCode: String, indexCode: String, period: String): KisApiIndexChartDto.IndexChartPriceRequest {
         val today = LocalDate.now()
         return KisApiIndexChartDto.IndexChartPriceRequest(
@@ -69,6 +81,14 @@ class KisApiFetcher(
             FID_INPUT_PRICE_2 = "0",
             FID_VOL_CNT = "0",
             FID_INPUT_DATE_1 = "0"
+        )
+    }
+
+    private fun createOverSeaStockPriceRequest(market: String, symbol: String): KisApiStockPriceDto.OverSeaStockPriceRequest {
+        return KisApiStockPriceDto.OverSeaStockPriceRequest(
+            AUTH = "",
+            EXCD = market,
+            SYMB = symbol
         )
     }
 

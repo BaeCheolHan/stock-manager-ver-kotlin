@@ -34,4 +34,11 @@ class KisApiTest {
         Assertions.assertNotNull(data)
     }
 
+    @Test
+    fun getOverSeaStockPrice() {
+        val data = fetcher.fetchOverSeaNowStockPrice("NAS", "AAPL")
+        println(data)
+        Assertions.assertNotNull(data)
+    }
+
 }
