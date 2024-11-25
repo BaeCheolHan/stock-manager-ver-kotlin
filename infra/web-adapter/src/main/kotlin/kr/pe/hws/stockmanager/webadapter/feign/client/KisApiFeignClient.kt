@@ -1,6 +1,5 @@
 package kr.pe.hws.stockmanager.webadapter.feign.client
 
-import kr.pe.hws.stockmanager.domain.kis.OverSeaNowStockPriceResponseWrapper
 import kr.pe.hws.stockmanager.domain.token.ApiToken
 import kr.pe.hws.stockmanager.webadapter.config.StockManagerFeignClientConfig
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto
@@ -29,14 +28,14 @@ interface KisApiFeignClient {
     fun getOverSeaStockPrice(
         @RequestHeader header: HttpHeaders,
         @SpringQueryMap param: KisApiStockPriceDto.OverSeaStockPriceRequest,
-    ): OverSeaNowStockPriceResponseWrapper.OverSeaNowStockPriceResponse
+    ): KisApiStockPriceDto.OverSeaNowStockPriceResponse
 
     // 국내 개별 주식 상세
     @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-price")
     fun getKrStockPrice(
         @RequestHeader header: HttpHeaders,
         @SpringQueryMap param: KisApiStockPriceDto.KrStockPriceRequest,
-    )
+    ): KisApiStockPriceDto.KrNowStockPriceResponse
 
     // 국내 지수 api
     @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice")
