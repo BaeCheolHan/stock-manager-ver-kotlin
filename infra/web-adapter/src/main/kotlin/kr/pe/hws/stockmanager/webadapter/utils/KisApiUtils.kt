@@ -22,8 +22,7 @@ class KisApiUtils(
      * 저장된 REST KIS Token을 가져오거나, 새로 생성하여 저장.
      */
     fun getRestKisToken(): RestKisToken {
-        return restKisTokenRepository.findAll().firstOrNull()
-            ?: fetchAndSaveNewToken()
+        return restKisTokenRepository.findAll().filterNotNull().firstOrNull() ?: fetchAndSaveNewToken()
     }
 
     /**

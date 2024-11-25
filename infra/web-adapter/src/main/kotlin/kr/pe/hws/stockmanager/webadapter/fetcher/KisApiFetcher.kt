@@ -2,6 +2,7 @@ package kr.pe.hws.stockmanager.webadapter.fetcher
 
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChart
+import kr.pe.hws.stockmanager.domain.kis.stock.KrStockPrice
 import kr.pe.hws.stockmanager.domain.kis.stock.OverSeaStockPrice
 import kr.pe.hws.stockmanager.domain.kis.stock.StockVolumeRank
 import kr.pe.hws.stockmanager.webadapter.constants.KisApiTransactionId
@@ -48,13 +49,19 @@ class KisApiFetcher(
         }
     }
 
-    fun fetchOverSeaNowStockPrice(market: String, symbol: String) {
-        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.KR_VOLUME_RANK.getTransactionId())
+    fun fetchKrNowStockPrice(symbol: String): KrStockPrice {
+        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.KR_STOCK_PRICE.getTransactionId())
+        val request = createKrStockPriceRequest(symbol)
+        val response = kisApiFeignClient.getKrStockPrice(headers, request)
+        return response.details.toDomain()
+    }
+
+    fun fetchOverSeaNowStockPrice(market: String, symbol: String): OverSeaStockPrice {
+        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.OVER_SEA_STOCK_PRICE.getTransactionId())
         headers.add("custtype", "P")
         val request = createOverSeaStockPriceRequest(market, symbol)
         val response = kisApiFeignClient.getOverSeaStockPrice(headers, request)
-        println(response)
-//        return response.details.toDomain()
+        return response.details.toDomain()
     }
 
     private fun createIndexChartRequest(marketCode: String, indexCode: String, period: String): KisApiIndexChartDto.IndexChartPriceRequest {
@@ -81,6 +88,13 @@ class KisApiFetcher(
             FID_INPUT_PRICE_2 = "0",
             FID_VOL_CNT = "0",
             FID_INPUT_DATE_1 = "0"
+        )
+    }
+
+    private fun createKrStockPriceRequest(symbol: String): KisApiStockPriceDto.KrStockPriceRequest {
+        return KisApiStockPriceDto.KrStockPriceRequest(
+            fid_cond_mrkt_div_code = "J",
+            fid_input_iscd = symbol
         )
     }
 

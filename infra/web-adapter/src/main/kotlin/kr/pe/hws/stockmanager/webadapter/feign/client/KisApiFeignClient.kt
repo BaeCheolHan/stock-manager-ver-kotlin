@@ -24,22 +24,18 @@ interface KisApiFeignClient {
     fun getKisApiToken(@RequestBody param: KisApiRequests.KisTokenGenerateRequest): ApiToken.KisToken
 
     // 해외 개별 주식 상세
-//    @GetMapping("/uapi/overseas-price/v1/quotations/price-detail")
-//    fun getOverSeaStockPrice(
-//        @RequestHeader header: HttpHeaders,
-//        @SpringQueryMap param: KisApiStockPriceDto.OverSeaStockPriceRequest,
-//    ): KisApiStockPriceDto.OverSeaNowStockPriceResponse
     @GetMapping("/uapi/overseas-price/v1/quotations/price-detail")
     fun getOverSeaStockPrice(
         @RequestHeader header: HttpHeaders,
         @SpringQueryMap param: KisApiStockPriceDto.OverSeaStockPriceRequest,
-    ): String
+    ): KisApiStockPriceDto.OverSeaNowStockPriceResponse
+
     // 국내 개별 주식 상세
     @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-price")
     fun getKrStockPrice(
         @RequestHeader header: HttpHeaders,
         @SpringQueryMap param: KisApiStockPriceDto.KrStockPriceRequest,
-    )
+    ): KisApiStockPriceDto.KrNowStockPriceResponse
 
     // 국내 지수 api
     @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice")

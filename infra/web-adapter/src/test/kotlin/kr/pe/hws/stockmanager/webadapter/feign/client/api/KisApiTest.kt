@@ -35,8 +35,15 @@ class KisApiTest {
     }
 
     @Test
+    fun getKrStockPrice() {
+        val data = fetcher.fetchKrNowStockPrice("005930")
+        println(data)
+        Assertions.assertNotNull(data)
+    }
+
+    @Test
     fun getOverSeaStockPrice() {
-        val data = fetcher.fetchOverSeaNowStockPrice("NAS", "AAPL")
+        val data = fetcher.fetchOverSeaNowStockPrice("NYS", "O")
         println(data)
         Assertions.assertNotNull(data)
     }
