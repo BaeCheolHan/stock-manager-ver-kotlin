@@ -16,8 +16,15 @@ class KisApiTest {
 
 
     @Test
-    fun getKrIndexChart() {
+    fun getKospiIndexChart() {
         val chart = fetcher.fetchKrIndexChart(IndexType.KOSPI)
+        Assertions.assertNotNull(chart)
+        println(chart)
+    }
+
+    @Test
+    fun getKosdaqIndexChart() {
+        val chart = fetcher.fetchKrIndexChart(IndexType.KOSDAQ)
         Assertions.assertNotNull(chart)
         println(chart)
     }
