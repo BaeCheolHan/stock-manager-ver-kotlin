@@ -44,6 +44,13 @@ class KisApiTest {
     }
 
     @Test
+    fun getPhiladelphiaIndexChart() {
+        val chart = fetcher.fetchOverSeaIndexChart(IndexType.PHILADELPHIA)
+        Assertions.assertNotNull(chart)
+        println(chart)
+    }
+
+    @Test
     fun getKrStockVolumeRank() {
         val data = fetcher.fetchKrStockVolumeRank("0000")
         Assertions.assertNotNull(data)
