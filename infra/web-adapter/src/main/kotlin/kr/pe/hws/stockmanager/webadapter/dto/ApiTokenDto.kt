@@ -3,7 +3,7 @@ package kr.pe.hws.stockmanager.webadapter.dto
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 
-object ApiToken {
+object ApiTokenDto {
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
     open class BaseToken(
@@ -28,6 +28,6 @@ object ApiToken {
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
     data class KisToken(
-        val accessTokenExpiresAt: Long, // 변경: 의미 명확히 함
+        val accessTokenExpiresAt: String, // 변경: 의미 명확히 함
     ) : BaseToken(accessToken = "", tokenType = "", expiresIn = 0)
 }

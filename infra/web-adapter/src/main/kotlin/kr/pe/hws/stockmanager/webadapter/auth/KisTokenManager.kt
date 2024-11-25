@@ -28,7 +28,7 @@ class KisTokenManager(
         val tokenResponse = kisApiFeignClient.getKisApiToken(
             KisApiRequests.KisTokenGenerateRequest(appKey, appSecret)
         )
-        return RestKisToken(tokenResponse)
+        return RestKisToken(tokenResponse.accessToken, tokenResponse.accessTokenExpiresAt, tokenResponse.tokenType, tokenResponse.expiresIn)
     }
 
     private fun saveToken(token: RestKisToken): RestKisToken {
