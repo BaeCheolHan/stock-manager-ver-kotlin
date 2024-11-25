@@ -70,6 +70,11 @@ jobs:
           echo "release-notes=$RELEASE_NOTES" >> $GITHUB_ENV
           echo "Extracted release notes: $RELEASE_NOTES"
 
+      - name: Set Git user
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
       - name: Create Git Tag
         run: |
           git tag -a "${{ env.next-tag }}" -m "Release ${{ env.next-tag }}"
