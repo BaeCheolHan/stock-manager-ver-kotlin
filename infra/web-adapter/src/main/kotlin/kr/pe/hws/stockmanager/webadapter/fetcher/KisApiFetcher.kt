@@ -14,6 +14,7 @@ import kr.pe.hws.stockmanager.webadapter.dto.KisApiVolumeRankDto
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiVolumeRankDto.toDomain
 import kr.pe.hws.stockmanager.webadapter.feign.client.KisApiFeignClient
 import kr.pe.hws.stockmanager.webadapter.utils.KisApiUtils
+import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -25,45 +26,77 @@ class KisApiFetcher(
 ) {
 
     fun fetchKrIndexChart(indexType: IndexType): IndexChart.IndexChart {
-        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.KR_INDEX_CHART_PRICE.getTransactionId())
-        val request = createIndexChartRequest("U", indexType.code, "D")
-        val response = kisApiFeignClient.getKrInquireDailyIndexChart(headers, request)
-        return response.toDomain(indexType)
+        return fetchIndexChart("U", indexType, KisApiTransactionId.KR_INDEX_CHART_PRICE)
     }
 
     fun fetchOverSeaIndexChart(indexType: IndexType): IndexChart.IndexChart {
-        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.OVER_SEA_INDEX_CHART_PRICE.getTransactionId())
-        val request = createIndexChartRequest("N", indexType.code, "D")
-        val response = kisApiFeignClient.getOverSeaInquireDailyChart(headers, request)
-        return response.toDomain(indexType)
+        return fetchIndexChart("N", indexType, KisApiTransactionId.OVER_SEA_INDEX_CHART_PRICE)
     }
 
     fun fetchKrStockVolumeRank(itemCode: String): List<StockVolumeRank> {
-        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.KR_VOLUME_RANK.getTransactionId())
-        val request = createVolumeRankRequest(itemCode)
         return try {
-            val response = kisApiFeignClient.getVolumeRank(headers, request)
-            response.details.map { it.toDomain() }
+            fetchApiData(
+                transactionId = KisApiTransactionId.KR_VOLUME_RANK.getTransactionId(),
+                requestCreator = { createVolumeRankRequest(itemCode) },
+                apiCall = kisApiFeignClient::getVolumeRank
+            ).let { response ->
+                (response as KisApiVolumeRankDto.KrVolumeRankResponse).details.map { it.toDomain() }
+            }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
     fun fetchKrNowStockPrice(symbol: String): KrStockPrice {
-        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.KR_STOCK_PRICE.getTransactionId())
-        val request = createKrStockPriceRequest(symbol)
-        val response = kisApiFeignClient.getKrStockPrice(headers, request)
-        return response.details.toDomain()
+        return fetchApiData(
+            transactionId = KisApiTransactionId.KR_STOCK_PRICE.getTransactionId(),
+            requestCreator = { createKrStockPriceRequest(symbol) },
+            apiCall = kisApiFeignClient::getKrStockPrice
+        ).let { response ->
+            (response as KisApiStockPriceDto.KrNowStockPriceResponse).details.toDomain()
+        }
     }
 
     fun fetchOverSeaNowStockPrice(market: String, symbol: String): OverSeaStockPrice {
-        val headers = kisApiUtils.createApiHeaders(KisApiTransactionId.OVER_SEA_STOCK_PRICE.getTransactionId())
-        headers.add("custtype", "P")
-        val request = createOverSeaStockPriceRequest(market, symbol)
-        val response = kisApiFeignClient.getOverSeaStockPrice(headers, request)
-        return response.details.toDomain()
+        return fetchApiData(
+            transactionId = KisApiTransactionId.OVER_SEA_STOCK_PRICE.getTransactionId(),
+            additionalHeaders = mapOf("custtype" to "P"),
+            requestCreator = { createOverSeaStockPriceRequest(market, symbol) },
+            apiCall = kisApiFeignClient::getOverSeaStockPrice
+        ).let { response ->
+            (response as KisApiStockPriceDto.OverSeaNowStockPriceResponse).details.toDomain()
+        }
     }
 
+    // 공통 처리 로직
+    private fun fetchIndexChart(marketCode: String, indexType: IndexType, transactionId: KisApiTransactionId): IndexChart.IndexChart {
+        return fetchApiData(
+            transactionId = transactionId.getTransactionId(),
+            requestCreator = { createIndexChartRequest(marketCode, indexType.code, "D") },
+            apiCall = kisApiFeignClient::getKrInquireDailyIndexChart
+        ).let { response ->
+            (response as KisApiIndexChartDto.KrIndexChartResponse).toDomain(indexType)
+        }
+    }
+
+    private inline fun <R> fetchApiData(
+        transactionId: String,
+        additionalHeaders: Map<String, String> = emptyMap(),
+        requestCreator: () -> R,
+        apiCall: (headers: HttpHeaders, request: R) -> Any
+    ): Any {
+        val headers = createHeaders(transactionId, additionalHeaders)
+        val request = requestCreator()
+        return apiCall(headers, request)
+    }
+
+    private fun createHeaders(transactionId: String, additionalHeaders: Map<String, String> = emptyMap()): HttpHeaders {
+        val headers = kisApiUtils.createApiHeaders(transactionId)
+        additionalHeaders.forEach { (key, value) -> headers[key] = value }
+        return headers
+    }
+
+    // 요청 생성 로직
     private fun createIndexChartRequest(marketCode: String, indexCode: String, period: String): KisApiIndexChartDto.IndexChartPriceRequest {
         val today = LocalDate.now()
         return KisApiIndexChartDto.IndexChartPriceRequest(
