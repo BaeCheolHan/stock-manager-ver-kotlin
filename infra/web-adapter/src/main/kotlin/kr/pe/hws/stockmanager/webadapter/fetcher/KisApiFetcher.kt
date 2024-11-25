@@ -2,9 +2,9 @@ package kr.pe.hws.stockmanager.webadapter.fetcher
 
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChart
+import kr.pe.hws.stockmanager.domain.kis.stock.StockVolumeRank
 import kr.pe.hws.stockmanager.domain.kis.stock.KrStockPrice
 import kr.pe.hws.stockmanager.domain.kis.stock.OverSeaStockPrice
-import kr.pe.hws.stockmanager.domain.kis.stock.StockVolumeRank
 import kr.pe.hws.stockmanager.webadapter.constants.KisApiTransactionId
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto.toDomain

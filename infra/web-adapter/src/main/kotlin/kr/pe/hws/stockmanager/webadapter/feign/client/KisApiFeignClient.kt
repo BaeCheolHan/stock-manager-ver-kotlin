@@ -1,11 +1,7 @@
 package kr.pe.hws.stockmanager.webadapter.feign.client
 
-import kr.pe.hws.stockmanager.domain.token.ApiToken
 import kr.pe.hws.stockmanager.webadapter.config.StockManagerFeignClientConfig
-import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto
-import kr.pe.hws.stockmanager.webadapter.dto.KisApiRequests
-import kr.pe.hws.stockmanager.webadapter.dto.KisApiStockPriceDto
-import kr.pe.hws.stockmanager.webadapter.dto.KisApiVolumeRankDto
+import kr.pe.hws.stockmanager.webadapter.dto.*
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.cloud.openfeign.SpringQueryMap
 import org.springframework.http.HttpHeaders
@@ -21,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 )
 interface KisApiFeignClient {
     @PostMapping("/oauth2/tokenP", consumes = ["application/json"])
-    fun getKisApiToken(@RequestBody param: KisApiRequests.KisTokenGenerateRequest): ApiToken.KisToken
+    fun getKisApiToken(@RequestBody param: KisApiRequests.KisTokenGenerateRequest): ApiTokenDto.KisToken
 
     // 해외 개별 주식 상세
     @GetMapping("/uapi/overseas-price/v1/quotations/price-detail")

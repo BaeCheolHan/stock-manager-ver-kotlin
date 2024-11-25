@@ -1,4 +1,4 @@
-package kr.pe.hws.stockmanager.domain
+package kr.pe.hws.stockmanager.api
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

@@ -1,6 +1,6 @@
 package kr.pe.hws.stockmanager.webadapter.feign.client.api
 
-import kr.pe.hws.stockmanager.domain.InternalApiApplication
+import kr.pe.hws.stockmanager.api.InternalApiApplication
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.webadapter.fetcher.KisApiFetcher
 import org.junit.jupiter.api.Assertions
