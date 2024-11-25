@@ -76,7 +76,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
       - name: Create Git Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git tag -a "${{ env.next-tag }}" -m "Release ${{ env.next-tag }}"
           git push origin "${{ env.next-tag }}"
 
