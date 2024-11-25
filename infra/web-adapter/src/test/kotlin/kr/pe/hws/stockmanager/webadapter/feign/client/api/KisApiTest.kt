@@ -19,30 +19,35 @@ class KisApiTest {
     fun getKrIndexChart() {
         val chart = fetcher.fetchKrIndexChart(IndexType.KOSPI)
         Assertions.assertNotNull(chart)
+        println(chart)
     }
 
     @Test
     fun getSnpIndexChart() {
         val chart = fetcher.fetchOverSeaIndexChart(IndexType.SNP500)
         Assertions.assertNotNull(chart)
+        println(chart)
     }
 
     @Test
     fun getKrStockVolumeRank() {
         val data = fetcher.fetchKrStockVolumeRank("0000")
         Assertions.assertNotNull(data)
+        println(data)
     }
 
     @Test
     fun getKrStockPrice() {
         val data = fetcher.fetchKrNowStockPrice("005930")
         Assertions.assertNotNull(data)
+        println(data)
     }
 
     @Test
     fun getOverSeaStockPrice() {
         val data = fetcher.fetchOverSeaNowStockPrice("NYS", "O")
         Assertions.assertNotNull(data)
+        println(data)
     }
 
 }
