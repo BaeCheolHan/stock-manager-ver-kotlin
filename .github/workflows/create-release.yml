@@ -62,8 +62,8 @@ jobs:
       - name: Extract Release Notes from PR
         id: extract-notes
         run: |
-          BODY="${{ github.event.pull_request.body }}"
-          RELEASE_NOTES=$(echo "$BODY" | awk '/^### Release Notes/,/^<!--/' | sed '1d;$d')
+          echo "${{ github.event.pull_request.body }}" > pr_body.txt
+          RELEASE_NOTES=$(awk '/^### 릴리스 노트/,/^<!--/' pr_body.txt | sed '1d;$d')
           if [ -z "$RELEASE_NOTES" ]; then
             RELEASE_NOTES="No release notes provided in the PR."
           fi
