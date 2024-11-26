@@ -63,13 +63,52 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      - name: Create Git Tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        id: get-latest-tag
         run: |
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
-          git tag -a "${{ env.next-tag }}" -m "Release ${{ env.next-tag }}"
-          git push origin "${{ env.next-tag }}"
+          # 최신 태그 가져오기
+          TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "latest-tag=$TAG" >> $GITHUB_ENV
+
+      - name: Determine version increment
+        id: determine-version
+        run: |
+          # 라벨 확인
+          LABELS=$(echo "${{ github.event.pull_request.labels[*].name }}")
+          echo "Found labels: $LABELS"
+
+          # 최신 태그 기본값 설정
+          if [ -z "${{ env.latest-tag }}" ]; then
+            LATEST_TAG="v0.0.0"
+          else
+            LATEST_TAG="${{ env.latest-tag }}"
+          fi
+
+          # 태그 숫자 분리
+          MAJOR=$(echo $LATEST_TAG | cut -d. -f1 | cut -c2-)
+          MINOR=$(echo $LATEST_TAG | cut -d. -f2)
+          PATCH=$(echo $LATEST_TAG | cut -d. -f3)
+
+          # 라벨에 따라 증가
+          if [[ $LABELS == *"MAJOR"* ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [[ $LABELS == *"MINOR"* ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          else
+            PATCH=$((PATCH + 1))
+          fi
+
+          # 다음 태그 계산
+          NEXT_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          echo "next-tag=$NEXT_TAG" >> $GITHUB_ENV
+          echo "Calculated next tag: $NEXT_TAG"
+      
 
       - name: Publish Release
         uses: actions/create-release@v1
