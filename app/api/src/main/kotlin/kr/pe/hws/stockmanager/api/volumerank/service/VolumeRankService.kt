@@ -16,8 +16,7 @@ class VolumeRankService(
 ) {
     private val log = getLogger<VolumeRankService>()
 
-
-    fun getVolumeRanks(): List<KrVolumeRankResponseDto> {
+    fun getVolumeRanks(itemCode: String = "0000"): List<KrVolumeRankResponseDto> {
         val redisEntities = krVolumeRankRepository.findAll().filterNotNull().toList()
 
         return if (redisEntities.isNotEmpty()) {
@@ -26,19 +25,22 @@ class VolumeRankService(
                 .map(KrVolumeRankMapper::toResponse) // Domain → Response 변환
                 .sortedBy { it.rank } // rank 기준으로 정렬
         } else {
-            fetchAndCacheVolumeRanks() ?: emptyList()
+            log.info("No entries found in Redis. Fetching from API...")
+            fetchAndCacheVolumeRanks(itemCode)
         }
     }
 
-    private fun fetchAndCacheVolumeRanks(): List<KrVolumeRankResponseDto>? {
-        val apiResults = runCatching { fetcher.fetchKrStockVolumeRank("0000") }
+    private fun fetchAndCacheVolumeRanks(itemCode: String): List<KrVolumeRankResponseDto> {
+        val apiResults = runCatching { fetcher.fetchKrStockVolumeRank(itemCode) }
             .getOrElse {
-                log.error("Error fetching volume ranks from API: ${it.message}")
-                return null
+                log.error("Error fetching volume ranks from API: ${it.message}", it)
+                return emptyList()
             }
 
         if (apiResults.isNotEmpty()) {
             saveVolumeRanksToRedis(apiResults)
+        } else {
+            log.warn("No volume ranks received from API.")
         }
 
         return apiResults.map(KrVolumeRankMapper::toResponse).sortedBy { it.rank }
@@ -46,6 +48,11 @@ class VolumeRankService(
 
     private fun saveVolumeRanksToRedis(domains: List<KrVolumeRankDomain>) {
         val redisEntities = domains.map(KrVolumeRankRedisMapper::toRedisEntity)
-        krVolumeRankRepository.saveAll(redisEntities)
+        try {
+            krVolumeRankRepository.saveAll(redisEntities)
+        } catch (ex: Exception) {
+            log.error("Error saving volume ranks to Redis: ${ex.message}", ex)
+            throw RuntimeException("Failed to save volume ranks to Redis", ex)
+        }
     }
 }
