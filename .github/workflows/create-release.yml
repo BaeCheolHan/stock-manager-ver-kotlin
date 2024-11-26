@@ -65,11 +65,11 @@ jobs:
           # PR 본문 가져오기
           echo "${{ github.event.pull_request.body }}" > pr_body.txt
 
-          # 릴리스 노트 섹션 추출
-          RELEASE_NOTES=$(awk '/^### 릴리스 노트/,/^###|^<!--/' pr_body.txt | sed '1d;$d')
+          # 1. 릴리스 노트 섹션 ("Summary by CodeRabbit") 추출
+          RELEASE_NOTES=$(awk '/^Summary by CodeRabbit/,/^###|^<!--/' pr_body.txt | sed '1d;$d')
 
-          # 동적으로 추가된 CodeRabbit 텍스트 추출
-          CODERABBIT_TEXT=$(awk '/^🐰/,/^$/' pr_body.txt)
+          # 3. 동적으로 추가된 CodeRabbit 텍스트 추출 (🐇 또는 기타 패턴 포함)
+          CODERABBIT_TEXT=$(awk '/^[🐇|🐰]/,/^$/' pr_body.txt)
 
           # 릴리스 노트가 없는 경우 기본값 설정
           if [ -z "$RELEASE_NOTES" ]; then
