@@ -14,6 +14,7 @@ dependencies {
     api(project(Modules.Infra.mongodb))
     api(project(Modules.Infra.webAdapter))
     implementation(Libraries.Kotlin.jackson)
+    implementation("org.springframework.boot:spring-boot-starter-logging") // 기본 로깅
 
     testApi("org.jetbrains.kotlin:kotlin-test") // Kotlin Test
     testApi("org.springframework.boot:spring-boot-starter-test") // Spring Test
