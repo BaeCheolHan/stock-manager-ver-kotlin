@@ -32,8 +32,8 @@ object KrVolumeRankRedisMapper {
     // Redis Entity → Domain
     fun fromRedisEntity(entity: KrVolumeRankRedisEntity): KrVolumeRankDomain {
         return KrVolumeRankDomain(
-            stockName = entity.stockName,
             stockCode = entity.symbol,
+            stockName = entity.stockName,
             rank = entity.rank,
             currentPrice = entity.currentPrice,
             priceChangeSign = entity.priceChangeSign,
