@@ -7,6 +7,7 @@ dependencies {
     api(Libraries.Spring.openfeign)
     implementation(Libraries.Spring.bootStarterWeb)
     implementation(project(Modules.domain))
+    implementation(project(Modules.Infra.common))
     implementation(project(Modules.Infra.redis))
     testImplementation(Libraries.Spring.bootStarterTest)
     // JUnit 5

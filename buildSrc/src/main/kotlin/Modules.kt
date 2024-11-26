@@ -4,6 +4,7 @@ object Modules {
     const val api = ":app:api"
 
     object Infra {
+        const val common = ":infra:common"
         const val rdb = ":infra:rdb"
         const val mongodb = ":infra:mongodb"
         const val redis = ":infra:redis"

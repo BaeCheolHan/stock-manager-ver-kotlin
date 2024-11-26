@@ -1,8 +1,7 @@
 package kr.pe.hws.stockmanager.api.chart.service
 
 import kr.pe.hws.stockmanager.api.chart.dto.IndexChartResponseDto
-import kr.pe.hws.stockmanager.api.utils.logger.LogHelper.getLogger
-import kr.pe.hws.stockmanager.api.volumerank.service.VolumeRankService
+import kr.pe.hws.stockmanager.common.LogHelper.getLogger
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
 import kr.pe.hws.stockmanager.redis.mapper.IndexChartRedisMapper
