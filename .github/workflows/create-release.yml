@@ -63,13 +63,13 @@ jobs:
         id: extract-notes
         run: |
           # PR 본문 가져오기
-          echo "${{ github.event.pull_request.body }}" > pr_body.txt
+          printf "%s" "${{ github.event.pull_request.body }}" > pr_body.txt
 
           # 1. 릴리스 노트 섹션 추출 (Summary by CodeRabbit)
           RELEASE_NOTES=$(grep -A 10 '^Summary by CodeRabbit' pr_body.txt | sed '1d;/^###/,$d;/^<!--/d')
 
-          # 2. 동적으로 추가된 CodeRabbit 텍스트 추출 (🐰 또는 기타 패턴 포함)
-          CODERABBIT_TEXT=$(grep -A 10 '^[🐇|🐰]' pr_body.txt)
+          # 2. 동적으로 추가된 CodeRabbit 텍스트 추출 (인용 블록 스타일 대응)
+          CODERABBIT_TEXT=$(grep '^> ' pr_body.txt | sed 's/^> //')
 
           # 3. 릴리스 노트가 없는 경우 기본값 설정
           if [ -z "$RELEASE_NOTES" ]; then
@@ -79,11 +79,11 @@ jobs:
           # 4. 중복 제거
           FINAL_NOTES=$(echo -e "${RELEASE_NOTES}\n\n${CODERABBIT_TEXT}" | sort | uniq)
 
-          # 5. 출력 및 디버깅
-          echo -e "$FINAL_NOTES" > final_notes.txt
-          cat final_notes.txt
+          # 5. 결과 출력 및 디버깅
+          echo -e "Final Notes:\n$FINAL_NOTES"
+          echo "$FINAL_NOTES" > final_notes.txt
 
-          # 6. 환경 변수 저장
+          # 6. 환경 변수에 저장 (JSON 형식으로 안전하게 저장)
           echo "release-notes=$(cat final_notes.txt | jq -R -s .)" >> $GITHUB_ENV
           echo "Extracted and enhanced release notes:\n$(cat final_notes.txt)"
 
