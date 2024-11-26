@@ -17,15 +17,19 @@ jobs:
         id: extract-notes
         run: |
           # PR 본문 가져오기
-          printf "%s" "${{ github.event.pull_request.body }}" > pr_body.txt
+          if [ -z "${{ github.event.pull_request.body }}" ]; then
+            echo "No PR body provided." > pr_body.txt
+          else
+            printf "%s" "${{ github.event.pull_request.body }}" > pr_body.txt
+          fi
 
           # 1. 각 항목별 섹션 추출
-          NEW_FEATURE=$(grep '^New Feature:' pr_body.txt | sed 's/^New Feature: //')
-          REFACTOR=$(grep '^Refactor:' pr_body.txt | sed 's/^Refactor: //')
-          OTHERS=$(grep -E '^(Bug Fix:|Chore:|Test:|Docs:)' pr_body.txt)
+          NEW_FEATURE=$(grep '^New Feature:' pr_body.txt | sed 's/^New Feature: //' || true)
+          REFACTOR=$(grep '^Refactor:' pr_body.txt | sed 's/^Refactor: //' || true)
+          OTHERS=$(grep -E '^(Bug Fix:|Chore:|Test:|Docs:)' pr_body.txt || true)
 
           # 2. CodeRabbit funny text 영역 추출
-          FUNNY_TEXT=$(grep '^>' pr_body.txt | sed 's/^> //')
+          FUNNY_TEXT=$(grep '^>' pr_body.txt | sed 's/^> //' || true)
 
           # 3. 릴리스 노트 작성
           FINAL_NOTES=""
