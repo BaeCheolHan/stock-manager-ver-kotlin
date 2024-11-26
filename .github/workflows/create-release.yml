@@ -13,79 +13,46 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get latest tag
-        id: get-latest-tag
-        run: |
-          # 최신 태그 가져오기
-          TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "latest-tag=$TAG" >> $GITHUB_ENV
-
-      - name: Determine version increment
-        id: determine-version
-        run: |
-          # 라벨 확인
-          LABELS=$(echo "${{ github.event.pull_request.labels[*].name }}")
-          echo "Found labels: $LABELS"
-          
-          # 최신 태그 기본값 설정
-          if [ -z "${{ env.latest-tag }}" ]; then
-            LATEST_TAG="v0.0.0"
-          else
-            LATEST_TAG="${{ env.latest-tag }}"
-          fi
-          
-          # 태그 숫자 분리
-          MAJOR=$(echo $LATEST_TAG | cut -d. -f1 | cut -c2-)
-          MINOR=$(echo $LATEST_TAG | cut -d. -f2)
-          PATCH=$(echo $LATEST_TAG | cut -d. -f3)
-          
-          # 라벨에 따라 증가
-          if [[ $LABELS == *"MAJOR"* ]]; then
-            MAJOR=$((MAJOR + 1))
-            MINOR=0
-            PATCH=0
-          elif [[ $LABELS == *"MINOR"* ]]; then
-            MINOR=$((MINOR + 1))
-            PATCH=0
-          else
-            PATCH=$((PATCH + 1))
-          fi
-          
-          # 다음 태그 계산
-          NEXT_TAG="v${MAJOR}.${MINOR}.${PATCH}"
-          echo "next-tag=$NEXT_TAG" >> $GITHUB_ENV
-          echo "Calculated next tag: $NEXT_TAG"
-
       - name: Extract Release Notes from PR
         id: extract-notes
         run: |
           # PR 본문 가져오기
           printf "%s" "${{ github.event.pull_request.body }}" > pr_body.txt
 
-          # 1. 릴리스 노트 섹션 추출 (Summary by CodeRabbit)
-          RELEASE_NOTES=$(grep -A 10 '^Summary by CodeRabbit' pr_body.txt | sed '1d;/^###/,$d;/^<!--/d')
+          # 1. 각 항목별 섹션 추출
+          NEW_FEATURE=$(grep '^New Feature:' pr_body.txt | sed 's/^New Feature: //')
+          REFACTOR=$(grep '^Refactor:' pr_body.txt | sed 's/^Refactor: //')
+          OTHERS=$(grep -E '^(Bug Fix:|Chore:|Test:|Docs:)' pr_body.txt)
 
-          # 2. 동적으로 추가된 CodeRabbit 텍스트 추출 (인용 블록 스타일 대응)
-          CODERABBIT_TEXT=$(grep '^> ' pr_body.txt | sed 's/^> //')
+          # 2. CodeRabbit funny text 영역 추출
+          FUNNY_TEXT=$(grep '^>' pr_body.txt | sed 's/^> //')
 
-          # 3. 릴리스 노트가 없는 경우 기본값 설정
-          if [ -z "$RELEASE_NOTES" ]; then
-            RELEASE_NOTES="No release notes provided. This is an auto-generated release."
+          # 3. 릴리스 노트 작성
+          FINAL_NOTES=""
+          if [ -n "$NEW_FEATURE" ]; then
+            FINAL_NOTES+="New Feature:\n${NEW_FEATURE}\n\n"
+          fi
+          if [ -n "$REFACTOR" ]; then
+            FINAL_NOTES+="Refactor:\n${REFACTOR}\n\n"
+          fi
+          if [ -n "$OTHERS" ]; then
+            FINAL_NOTES+="${OTHERS}\n\n"
+          fi
+          if [ -n "$FUNNY_TEXT" ]; then
+            FINAL_NOTES+="${FUNNY_TEXT}\n"
           fi
 
-          # 4. 중복 제거
-          FINAL_NOTES=$(echo -e "${RELEASE_NOTES}\n\n${CODERABBIT_TEXT}" | sort | uniq)
+          # 릴리스 노트가 비어있는 경우 기본값 설정
+          if [ -z "$FINAL_NOTES" ]; then
+            FINAL_NOTES="No release notes provided. This is an auto-generated release."
+          fi
 
-          # 5. 결과 출력 및 디버깅
-          echo -e "Final Notes:\n$FINAL_NOTES"
-          echo "$FINAL_NOTES" > final_notes.txt
+          # 디버깅을 위해 파일에 저장
+          echo -e "$FINAL_NOTES" > final_notes.txt
+          cat final_notes.txt
 
-          # 6. 환경 변수에 저장 (JSON 형식으로 안전하게 저장)
+          # 환경 변수 저장
           echo "release-notes=$(cat final_notes.txt | jq -R -s .)" >> $GITHUB_ENV
-          echo "Extracted and enhanced release notes:\n$(cat final_notes.txt)"
 
       - name: Set Git user
         run: |
