@@ -17,6 +17,7 @@ dependencies {
 
     testApi("org.jetbrains.kotlin:kotlin-test") // Kotlin Test
     testApi("org.springframework.boot:spring-boot-starter-test") // Spring Test
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 }
 
 tasks.register<Copy>("copy-dev") {
