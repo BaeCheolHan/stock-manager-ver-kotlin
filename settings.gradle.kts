@@ -5,5 +5,6 @@ include(
     "infra:rdb",
     "infra:redis",
     "infra:mongodb",
-    "infra:web-adapter"
+    "infra:web-adapter",
+    "infra:common"
 )

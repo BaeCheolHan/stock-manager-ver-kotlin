@@ -9,6 +9,7 @@ dependencies {
     implementation(Libraries.Spring.bootStarterWeb)
     implementation(Libraries.Kotlin.reflect)
     implementation(project(Modules.domain))
+    implementation(project(Modules.Infra.common))
     api(project(Modules.Infra.rdb))
     implementation(project(Modules.Infra.redis))
     api(project(Modules.Infra.mongodb))
