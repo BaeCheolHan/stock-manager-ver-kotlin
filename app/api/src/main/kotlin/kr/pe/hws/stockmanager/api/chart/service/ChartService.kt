@@ -1,6 +1,8 @@
 package kr.pe.hws.stockmanager.api.chart.service
 
 import kr.pe.hws.stockmanager.api.chart.dto.IndexChartResponseDto
+import kr.pe.hws.stockmanager.api.utils.logger.LogHelper.getLogger
+import kr.pe.hws.stockmanager.api.volumerank.service.VolumeRankService
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
 import kr.pe.hws.stockmanager.redis.mapper.IndexChartRedisMapper
@@ -13,6 +15,8 @@ class ChartService(
     private val fetcher: KisApiFetcher,
     private val indexChartRepository: IndexChartRepository
 ) {
+    private val log = getLogger<ChartService>()
+
     fun getIndexCharts(): IndexChartResponseDto {
         val indexTypes = listOf(
             IndexType.KOSPI,
@@ -46,9 +50,16 @@ class ChartService(
 
     // Redis에 저장하고 API 호출을 처리하는 메서드
     private fun fetchAndSaveNewIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
-        val response = fetchIndexChartByType(indexType) ?: throw IllegalStateException("API response for $indexType was null")
+        val response = fetchIndexChartByType(indexType)
+            ?: throw IllegalStateException("API response for $indexType was null")
+
         val redisEntity = IndexChartRedisMapper.toRedisEntity(response)
-        indexChartRepository.save(redisEntity)
+        try {
+            indexChartRepository.save(redisEntity)
+        } catch (ex: Exception) {
+            log.error("Failed to save index chart for $indexType: ${ex.message}", ex)
+        }
+
         return response
     }
 

@@ -1,6 +1,9 @@
 package kr.pe.hws.stockmanager.webadapter.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import kr.pe.hws.stockmanager.domain.kis.volumerank.KrVolumeRankDomain
 import java.math.BigDecimal
 
@@ -49,50 +52,52 @@ object KisApiVolumeRankDto {
     /**
      * 주식 거래량 랭킹 정보 DTO
      */
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     data class KrVolumeRankDto(
-        val hts_kor_isnm: String?,             // HTS 한글 종목명
-        val mksc_shrn_iscd: String?,           // 단축 종목 코드
-        val data_rank: Int?,                   // 데이터 순위
-        val stck_prpr: BigDecimal?,            // 현재가
-        val prdy_vrss_sign: String?,           // 전일 대비 부호
-        val prdy_vrss: BigDecimal?,            // 전일 대비
-        val prdy_ctrt: BigDecimal?,            // 전일 대비율
-        val acml_vol: Long?,                   // 누적 거래량
-        val prdy_vol: Long?,                   // 전일 거래량
-        val lstn_stcn: Long?,                  // 상장 주수
-        val avrg_vol: Long?,                   // 평균 거래량
-        val n_befr_clpr_vrss_prpr_rate: BigDecimal?, // N일 전 종가 대비율
-        val vol_inrt: BigDecimal?,             // 거래량 증가율
-        val vol_tnrt: BigDecimal?,             // 거래량 회전율
-        val nday_vol_tnrt: BigDecimal?,        // N일 거래량 회전율
-        val avrg_tr_pbmn: BigDecimal?,         // 평균 거래 대금
-        val tr_pbmn_tnrt: BigDecimal?,         // 거래 대금 회전율
-        val nday_tr_pbmn_tnrt: BigDecimal?,    // N일 거래 대금 회전율
-        val acml_tr_pbmn: BigDecimal?          // 누적 거래 대금
+        val htsKorIsnm: String?,             // HTS 한글 종목명
+        val mkscShrnIscd: String?,           // 단축 종목 코드
+        val dataRank: Int?,                   // 데이터 순위
+        val stckPrpr: BigDecimal?,            // 현재가
+        val prdyVrssSign: String?,           // 전일 대비 부호
+        val prdyVrss: BigDecimal?,            // 전일 대비
+        val prdyCtrt: BigDecimal?,            // 전일 대비율
+        val acmlVol: Long?,                   // 누적 거래량
+        val prdyVol: Long?,                   // 전일 거래량
+        val lstnStcn: Long?,                  // 상장 주수
+        val avrgVol: Long?,                   // 평균 거래량
+        val nBefrClprVrssPrprRate: BigDecimal?, // N일 전 종가 대비율
+        val volInrt: BigDecimal?,             // 거래량 증가율
+        val volTnrt: BigDecimal?,             // 거래량 회전율
+        val ndayVolTnrt: BigDecimal?,        // N일 거래량 회전율
+        val avrgTrPbmn: BigDecimal?,         // 평균 거래 대금
+        val trPbmnTnrt: BigDecimal?,         // 거래 대금 회전율
+        val ndayTrPbmnTnrt: BigDecimal?,    // N일 거래 대금 회전율
+        val acmlTrPbmn: BigDecimal?          // 누적 거래 대금
     )
 
 
     fun KrVolumeRankDto.toDomain(): KrVolumeRankDomain {
         return KrVolumeRankDomain(
-            stockName = this.hts_kor_isnm ?: throw IllegalArgumentException("stockName cannot be null"),
-            stockCode = this.mksc_shrn_iscd ?: throw IllegalArgumentException("stockCode cannot be null"),
-            rank = this.data_rank ?: throw IllegalArgumentException("rank cannot be null"),
-            currentPrice = this.stck_prpr ?: throw IllegalArgumentException("currentPrice cannot be null"),
-            priceChangeSign = this.prdy_vrss_sign ?: throw IllegalArgumentException("priceChangeSign cannot be null"),
-            priceChange = this.prdy_vrss ?: throw IllegalArgumentException("priceChange cannot be null"),
-            priceChangeRate = this.prdy_ctrt ?: throw IllegalArgumentException("priceChangeRate cannot be null"),
-            accumulatedVolume = this.acml_vol ?: throw IllegalArgumentException("accumulatedVolume cannot be null"),
-            previousVolume = this.prdy_vol ?: throw IllegalArgumentException("previousVolume cannot be null"),
-            listedShares = this.lstn_stcn ?: throw IllegalArgumentException("listedShares cannot be null"),
-            averageVolume = this.avrg_vol ?: throw IllegalArgumentException("averageVolume cannot be null"),
-            nDayClosingPriceRate = this.n_befr_clpr_vrss_prpr_rate ?: throw IllegalArgumentException("nDayClosingPriceRate cannot be null"),
-            volumeIncreaseRate = this.vol_inrt ?: throw IllegalArgumentException("volumeIncreaseRate cannot be null"),
-            volumeTurnoverRate = this.vol_tnrt ?: throw IllegalArgumentException("volumeTurnoverRate cannot be null"),
-            nDayVolumeTurnoverRate = this.nday_vol_tnrt ?: throw IllegalArgumentException("nDayVolumeTurnoverRate cannot be null"),
-            averageTransactionAmount = this.avrg_tr_pbmn ?: throw IllegalArgumentException("averageTransactionAmount cannot be null"),
-            transactionTurnoverRate = this.tr_pbmn_tnrt ?: throw IllegalArgumentException("transactionTurnoverRate cannot be null"),
-            nDayTransactionTurnoverRate = this.nday_tr_pbmn_tnrt ?: throw IllegalArgumentException("nDayTransactionTurnoverRate cannot be null"),
-            accumulatedTransactionAmount = this.acml_tr_pbmn ?: throw IllegalArgumentException("accumulatedTransactionAmount cannot be null")
+            stockName = this.htsKorIsnm ?: throw IllegalArgumentException("stockName cannot be null"),
+            stockCode = this.mkscShrnIscd ?: throw IllegalArgumentException("stockCode cannot be null"),
+            rank = this.dataRank ?: throw IllegalArgumentException("rank cannot be null"),
+            currentPrice = this.stckPrpr ?: throw IllegalArgumentException("currentPrice cannot be null"),
+            priceChangeSign = this.prdyVrssSign ?: throw IllegalArgumentException("priceChangeSign cannot be null"),
+            priceChange = this.prdyVrss ?: throw IllegalArgumentException("priceChange cannot be null"),
+            priceChangeRate = this.prdyCtrt ?: throw IllegalArgumentException("priceChangeRate cannot be null"),
+            accumulatedVolume = this.acmlVol ?: throw IllegalArgumentException("accumulatedVolume cannot be null"),
+            previousVolume = this.prdyVol ?: throw IllegalArgumentException("previousVolume cannot be null"),
+            listedShares = this.lstnStcn ?: throw IllegalArgumentException("listedShares cannot be null"),
+            averageVolume = this.avrgVol ?: throw IllegalArgumentException("averageVolume cannot be null"),
+            nDayClosingPriceRate = this.nBefrClprVrssPrprRate ?: throw IllegalArgumentException("nDayClosingPriceRate cannot be null"),
+            volumeIncreaseRate = this.volInrt ?: throw IllegalArgumentException("volumeIncreaseRate cannot be null"),
+            volumeTurnoverRate = this.volTnrt ?: throw IllegalArgumentException("volumeTurnoverRate cannot be null"),
+            nDayVolumeTurnoverRate = this.ndayVolTnrt ?: throw IllegalArgumentException("nDayVolumeTurnoverRate cannot be null"),
+            averageTransactionAmount = this.avrgTrPbmn ?: throw IllegalArgumentException("averageTransactionAmount cannot be null"),
+            transactionTurnoverRate = this.trPbmnTnrt ?: throw IllegalArgumentException("transactionTurnoverRate cannot be null"),
+            nDayTransactionTurnoverRate = this.ndayTrPbmnTnrt ?: throw IllegalArgumentException("nDayTransactionTurnoverRate cannot be null"),
+            accumulatedTransactionAmount = this.acmlTrPbmn ?: throw IllegalArgumentException("accumulatedTransactionAmount cannot be null")
         )
     }
 }

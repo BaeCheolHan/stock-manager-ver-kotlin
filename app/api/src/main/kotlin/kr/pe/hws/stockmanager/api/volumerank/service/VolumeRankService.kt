@@ -1,5 +1,6 @@
 package kr.pe.hws.stockmanager.api.volumerank.service
 
+import kr.pe.hws.stockmanager.api.utils.logger.LogHelper.getLogger
 import kr.pe.hws.stockmanager.api.utils.mapper.KrVolumeRankMapper
 import kr.pe.hws.stockmanager.api.volumerank.dto.KrVolumeRankResponseDto
 import kr.pe.hws.stockmanager.domain.kis.volumerank.KrVolumeRankDomain
@@ -13,6 +14,8 @@ class VolumeRankService(
     private val fetcher: KisApiFetcher,
     private val krVolumeRankRepository: KrVolumeRankRepository
 ) {
+    private val log = getLogger<VolumeRankService>()
+
 
     fun getVolumeRanks(): List<KrVolumeRankResponseDto> {
         val redisEntities = krVolumeRankRepository.findAll().filterNotNull().toList()
@@ -30,7 +33,7 @@ class VolumeRankService(
     private fun fetchAndCacheVolumeRanks(): List<KrVolumeRankResponseDto>? {
         val apiResults = runCatching { fetcher.fetchKrStockVolumeRank("0000") }
             .getOrElse {
-                println("Error fetching volume ranks from API: ${it.message}")
+                log.error("Error fetching volume ranks from API: ${it.message}")
                 return null
             }
 
