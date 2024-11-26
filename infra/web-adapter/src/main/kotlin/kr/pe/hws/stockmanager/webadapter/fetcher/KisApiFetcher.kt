@@ -43,7 +43,6 @@ class KisApiFetcher(
                 (response as KisApiVolumeRankDto.KrVolumeRankResponse).details.map { it.toDomain() }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             emptyList()
         }
     }
