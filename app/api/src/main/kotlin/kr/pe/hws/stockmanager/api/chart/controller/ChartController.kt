@@ -13,6 +13,6 @@ class ChartController (
 ){
     @GetMapping("/index")
     fun getIndexCharts(): IndexChartResponseDto {
-        return service.getIndexChartsAsync()
+        return service.getIndexCharts()
     }
 }
