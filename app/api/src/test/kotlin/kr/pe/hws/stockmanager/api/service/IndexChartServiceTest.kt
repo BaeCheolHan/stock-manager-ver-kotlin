@@ -13,11 +13,12 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import java.math.BigDecimal
 import java.util.*
+import org.mockito.kotlin.any
 
 class ChartServiceTest {
 
-    private val fetcher: KisApiFetcher = mock()
-    private val indexChartRepository: IndexChartRepository = mock()
+    private val fetcher: KisApiFetcher = mock(KisApiFetcher::class.java)
+    private val indexChartRepository: IndexChartRepository = mock(IndexChartRepository::class.java)
     private val service = ChartService(fetcher, indexChartRepository)
 
     private fun createMockRedisEntity(indexType: IndexType): IndexChartRedisEntity {
@@ -75,8 +76,8 @@ class ChartServiceTest {
     }
 
     @Test
-    fun `should return all index charts from Redis if data exists`() {
-        // Given: 모든 지수의 Redis 데이터를 설정
+    fun `should return charts from Redis if data exists`() {
+        // Given: Mock Redis data for all indices
         val allIndexTypes = listOf(
             IndexType.KOSPI,
             IndexType.KOSDAQ,
@@ -90,28 +91,30 @@ class ChartServiceTest {
         `when`(indexChartRepository.findById(any(String::class.java))).thenAnswer { invocation ->
             val id = invocation.getArgument<String>(0)
             Optional.ofNullable(mockRedisEntities[allIndexTypes.find { it.id == id }])
-
-            // When
-            val result = service.getIndexCharts()
-
-            // Then: 모든 지수 데이터가 반환되었는지 확인
-            assertNotNull(result.kospiChart)
-            assertNotNull(result.kosdaqChart)
-            assertNotNull(result.snp500Chart)
-            assertNotNull(result.nasdaqChart)
-            assertNotNull(result.dawChart)
-            assertNotNull(result.philadelphiaChart)
-
-            // Verify: Redis만 조회하고 API는 호출되지 않음
-            verify(indexChartRepository, times(allIndexTypes.size)).findById(anyString())
-            verify(fetcher, never()).fetchKrIndexChart(any())
-            verify(fetcher, never()).fetchOverSeaIndexChart(any())
         }
+
+        // When
+        val result = service.getIndexCharts()
+
+        // Then: All data is retrieved from Redis
+        assertNotNull(result.kospiChart)
+        assertNotNull(result.kosdaqChart)
+        assertNotNull(result.snp500Chart)
+        assertNotNull(result.nasdaqChart)
+        assertNotNull(result.dawChart)
+        assertNotNull(result.philadelphiaChart)
+
+        // Verify Redis was queried, and no API calls were made
+        verify(indexChartRepository, times(allIndexTypes.size)).findById(any(String::class.java))
+        verify(fetcher, never()).fetchKrIndexChart(any())
+        verify(fetcher, never()).fetchOverSeaIndexChart(any())
     }
 
     @Test
     fun `should fetch from API and save to Redis if data does not exist`() {
-        // Given: Redis 데이터가 없는 경우와 API 응답 설정
+        // Given: Redis is empty and API provides data
+        `when`(indexChartRepository.findById(anyString())).thenReturn(Optional.empty())
+
         val allIndexTypes = listOf(
             IndexType.KOSPI,
             IndexType.KOSDAQ,
@@ -121,24 +124,20 @@ class ChartServiceTest {
             IndexType.PHILADELPHIA
         )
 
-        // Redis Mock 설정
-        `when`(indexChartRepository.findById(any(String::class.java))).thenReturn(Optional.empty())
-
-        // API Mock 설정
         val mockApiResponses = allIndexTypes.associateWith { createMockIndexChart(it) }
-        `when`(fetcher.fetchKrIndexChart(any(IndexType::class.java))).thenAnswer { invocation ->
+        `when`(fetcher.fetchKrIndexChart(any())).thenAnswer { invocation ->
             val indexType = invocation.getArgument<IndexType>(0)
             mockApiResponses[indexType]
         }
-        `when`(fetcher.fetchKrIndexChart(any(IndexType::class.java))).thenAnswer { invocation ->
+        `when`(fetcher.fetchOverSeaIndexChart(any())).thenAnswer { invocation ->
             val indexType = invocation.getArgument<IndexType>(0)
             mockApiResponses[indexType]
         }
 
-        // When: API 호출 및 데이터 반환
+        // When
         val result = service.getIndexCharts()
 
-        // Then: 모든 지수 데이터가 API를 통해 반환되었는지 확인
+        // Then: All data is fetched from API and saved to Redis
         assertNotNull(result.kospiChart)
         assertNotNull(result.kosdaqChart)
         assertNotNull(result.snp500Chart)
@@ -146,8 +145,8 @@ class ChartServiceTest {
         assertNotNull(result.dawChart)
         assertNotNull(result.philadelphiaChart)
 
-        // Verify: Redis 조회 실패 시 API 호출 및 Redis 저장 여부 확인
-        verify(indexChartRepository, times(allIndexTypes.size)).findById(any())
+        // Verify API was called for all indices and Redis saved the data
+        verify(indexChartRepository, times(allIndexTypes.size)).findById(anyString())
         verify(fetcher, times(2)).fetchKrIndexChart(any())
         verify(fetcher, times(4)).fetchOverSeaIndexChart(any())
         verify(indexChartRepository, times(allIndexTypes.size)).save(any())
@@ -155,7 +154,7 @@ class ChartServiceTest {
 
     @Test
     fun `should handle mixed Redis and API data sources`() {
-        // Given: 일부 데이터는 Redis에서, 일부 데이터는 API에서 가져오는 상황 설정
+        // Given: Some data in Redis, others fetched from API
         val redisIndexTypes = listOf(IndexType.KOSPI, IndexType.KOSDAQ)
         val apiIndexTypes = listOf(IndexType.SNP500, IndexType.NASDAQ, IndexType.DAW, IndexType.PHILADELPHIA)
 
@@ -178,7 +177,7 @@ class ChartServiceTest {
         // When
         val result = service.getIndexCharts()
 
-        // Then: Redis와 API 데이터를 적절히 가져왔는지 검증
+        // Then: Redis and API data are correctly combined
         assertNotNull(result.kospiChart)
         assertNotNull(result.kosdaqChart)
         assertNotNull(result.snp500Chart)
@@ -186,10 +185,10 @@ class ChartServiceTest {
         assertNotNull(result.dawChart)
         assertNotNull(result.philadelphiaChart)
 
-        // Verify: Redis에서 2개, API에서 4개 데이터 가져옴
+        // Verify Redis and API were both used
         verify(indexChartRepository, times(6)).findById(anyString())
         verify(fetcher, times(4)).fetchOverSeaIndexChart(any())
-        verify(fetcher, never()).fetchKrIndexChart(IndexType.KOSPI) // API 호출되지 않음
+        verify(fetcher, never()).fetchKrIndexChart(IndexType.KOSPI)
         verify(indexChartRepository, times(4)).save(any())
     }
 }
