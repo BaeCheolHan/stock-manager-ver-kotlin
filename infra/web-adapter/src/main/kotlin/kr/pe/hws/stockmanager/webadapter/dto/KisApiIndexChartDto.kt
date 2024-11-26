@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
-import kr.pe.hws.stockmanager.domain.kis.index.IndexChart
+import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
+import java.math.BigDecimal
 
 object KisApiIndexChartDto {
     data class IndexChartPriceRequest(
@@ -78,11 +79,11 @@ object KisApiIndexChartDto {
     ) : IndexChartResponse()
 
     sealed class IndexChartSummary {
-        abstract val currentPrice: String?
-        abstract val highPrice: String?
-        abstract val lowPrice: String?
-        abstract val openPrice: String?
-        abstract val tradingVolume: String?
+        abstract val currentPrice: BigDecimal?
+        abstract val highPrice: BigDecimal?
+        abstract val lowPrice: BigDecimal?
+        abstract val openPrice: BigDecimal?
+        abstract val tradingVolume: BigDecimal?
         abstract val priceChangeSign: String?
         abstract val name: String?
     }
@@ -90,12 +91,12 @@ object KisApiIndexChartDto {
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class KrChartSummary(
-        @JsonProperty("bstp_nmix_prpr") override val currentPrice: String?,
-        @JsonProperty("bstp_nmix_hgpr") override val highPrice: String?,
-        @JsonProperty("bstp_nmix_lwpr") override val lowPrice: String?,
-        @JsonProperty("bstp_nmix_oprc") override val openPrice: String?,
-        @JsonProperty("prdy_nmix") val prdyNmix: String?, // 전일 지수
-        @JsonProperty("acml_vol") override val tradingVolume: String?,
+        @JsonProperty("bstp_nmix_prpr") override val currentPrice: BigDecimal?,
+        @JsonProperty("bstp_nmix_hgpr") override val highPrice: BigDecimal?,
+        @JsonProperty("bstp_nmix_lwpr") override val lowPrice: BigDecimal?,
+        @JsonProperty("bstp_nmix_oprc") override val openPrice: BigDecimal?,
+        @JsonProperty("prdy_nmix") val prdyNmix: BigDecimal?, // 전일 지수
+        @JsonProperty("acml_vol") override val tradingVolume: BigDecimal?,
         @JsonProperty("prdy_vrss_sign") override val priceChangeSign: String?,
         @JsonProperty("hts_kor_isnm") override val name: String?,
     ) : IndexChartSummary()
@@ -103,22 +104,22 @@ object KisApiIndexChartDto {
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class OverSeaIndexChartSummary(
-        @JsonProperty("ovrs_nmix_prpr") override val currentPrice: String?,
-        @JsonProperty("ovrs_prod_hgpr") override val highPrice: String?,
-        @JsonProperty("ovrs_prod_lwpr") override val lowPrice: String?,
-        @JsonProperty("ovrs_prod_oprc") override val openPrice: String?,
-        @JsonProperty("acml_vol") override val tradingVolume: String?,
+        @JsonProperty("ovrs_nmix_prpr") override val currentPrice: BigDecimal?,
+        @JsonProperty("ovrs_prod_hgpr") override val highPrice: BigDecimal?,
+        @JsonProperty("ovrs_prod_lwpr") override val lowPrice: BigDecimal?,
+        @JsonProperty("ovrs_prod_oprc") override val openPrice: BigDecimal?,
+        @JsonProperty("acml_vol") override val tradingVolume: BigDecimal?,
         @JsonProperty("prdy_vrss_sign") override val priceChangeSign: String?,
         @JsonProperty("hts_kor_isnm") override val name: String?,
     ) : IndexChartSummary()
 
     sealed class IndexChartDetail {
         abstract val date: String?
-        abstract val currentPrice: String?
-        abstract val openPrice: String?
-        abstract val highPrice: String?
-        abstract val lowPrice: String?
-        abstract val tradingVolume: String?
+        abstract val currentPrice: BigDecimal?
+        abstract val openPrice: BigDecimal?
+        abstract val highPrice: BigDecimal?
+        abstract val lowPrice: BigDecimal?
+        abstract val tradingVolume: BigDecimal?
         abstract val modified: Boolean
     }
 
@@ -126,11 +127,11 @@ object KisApiIndexChartDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class KrIndexChartDetail(
         @JsonProperty("stck_bsop_date") override val date: String?,
-        @JsonProperty("bstp_nmix_prpr") override val currentPrice: String?,
-        @JsonProperty("bstp_nmix_oprc") override val openPrice: String?,
-        @JsonProperty("bstp_nmix_hgpr") override val highPrice: String?,
-        @JsonProperty("bstp_nmix_lwpr") override val lowPrice: String?,
-        @JsonProperty("acml_vol") override val tradingVolume: String?,
+        @JsonProperty("bstp_nmix_prpr") override val currentPrice: BigDecimal?,
+        @JsonProperty("bstp_nmix_oprc") override val openPrice: BigDecimal?,
+        @JsonProperty("bstp_nmix_hgpr") override val highPrice: BigDecimal?,
+        @JsonProperty("bstp_nmix_lwpr") override val lowPrice: BigDecimal?,
+        @JsonProperty("acml_vol") override val tradingVolume: BigDecimal?,
         @JsonProperty("mod_yn") val modYn: String?,
     ) : IndexChartDetail() {
         override val modified: Boolean
@@ -141,30 +142,27 @@ object KisApiIndexChartDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class OverSeaIndexChartDetail(
         @JsonProperty("stck_bsop_date") override val date: String?,
-        @JsonProperty("ovrs_nmix_prpr") override val currentPrice: String?,
-        @JsonProperty("ovrs_nmix_oprc") override val openPrice: String?,
-        @JsonProperty("ovrs_nmix_hgpr") override val highPrice: String?,
-        @JsonProperty("ovrs_nmix_lwpr") override val lowPrice: String?,
-        @JsonProperty("acml_vol") override val tradingVolume: String?,
+        @JsonProperty("ovrs_nmix_prpr") override val currentPrice: BigDecimal?,
+        @JsonProperty("ovrs_nmix_oprc") override val openPrice: BigDecimal?,
+        @JsonProperty("ovrs_nmix_hgpr") override val highPrice: BigDecimal?,
+        @JsonProperty("ovrs_nmix_lwpr") override val lowPrice: BigDecimal?,
+        @JsonProperty("acml_vol") override val tradingVolume: BigDecimal?,
         @JsonProperty("mod_yn") val modYn: String?,
     ) : IndexChartDetail() {
         override val modified: Boolean
             get() = modYn == "Y"
     }
 
-    fun IndexChartResponse.toDomain(indexType: IndexType): IndexChart.IndexChart {
-        return IndexChart.IndexChart(
-            responseCode = rtCd,
-            messageCode = msgCd,
-            message = msg1,
+    fun IndexChartResponse.toDomain(indexType: IndexType): IndexChartDomain.IndexChart {
+        return IndexChartDomain.IndexChart(
             indexType = indexType.id,
             summary = summary.toDomain(),
             details = details.map { it.toDomain() },
         )
     }
 
-    fun IndexChartSummary.toDomain(): IndexChart.ChartSummary {
-        return IndexChart.ChartSummary(
+    fun IndexChartSummary.toDomain(): IndexChartDomain.ChartSummary {
+        return IndexChartDomain.ChartSummary(
             currentPrice = currentPrice,
             highPrice = highPrice,
             lowPrice = lowPrice,
@@ -176,8 +174,8 @@ object KisApiIndexChartDto {
         )
     }
 
-    fun IndexChartDetail.toDomain(): IndexChart.ChartDetail {
-        return IndexChart.ChartDetail(
+    fun IndexChartDetail.toDomain(): IndexChartDomain.ChartDetail {
+        return IndexChartDomain.ChartDetail(
             date = date,
             currentPrice = currentPrice,
             openPrice = openPrice,
