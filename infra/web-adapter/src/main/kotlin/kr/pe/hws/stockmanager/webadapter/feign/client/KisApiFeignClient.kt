@@ -52,6 +52,7 @@ interface KisApiFeignClient {
     fun getVolumeRank(@RequestHeader header: HttpHeaders, @SpringQueryMap param: KisApiVolumeRankDto.KrVolumeRankRequest
     ): KisApiVolumeRankDto.KrVolumeRankResponse
 
+
 }
 
 

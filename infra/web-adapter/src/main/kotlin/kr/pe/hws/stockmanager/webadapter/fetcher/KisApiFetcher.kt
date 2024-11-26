@@ -2,9 +2,9 @@ package kr.pe.hws.stockmanager.webadapter.fetcher
 
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
-import kr.pe.hws.stockmanager.domain.kis.stock.StockVolumeRank
 import kr.pe.hws.stockmanager.domain.kis.stock.KrStockPrice
 import kr.pe.hws.stockmanager.domain.kis.stock.OverSeaStockPrice
+import kr.pe.hws.stockmanager.domain.kis.volumerank.KrVolumeRankDomain
 import kr.pe.hws.stockmanager.webadapter.constants.KisApiTransactionId
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto
 import kr.pe.hws.stockmanager.webadapter.dto.KisApiIndexChartDto.toDomain
@@ -33,7 +33,7 @@ class KisApiFetcher(
         return fetchIndexChart("N", indexType, KisApiTransactionId.OVER_SEA_INDEX_CHART_PRICE)
     }
 
-    fun fetchKrStockVolumeRank(itemCode: String): List<StockVolumeRank> {
+    fun fetchKrStockVolumeRank(itemCode: String): List<KrVolumeRankDomain> {
         return try {
             fetchApiData(
                 transactionId = KisApiTransactionId.KR_VOLUME_RANK.getTransactionId(),
@@ -43,6 +43,7 @@ class KisApiFetcher(
                 (response as KisApiVolumeRankDto.KrVolumeRankResponse).details.map { it.toDomain() }
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             emptyList()
         }
     }

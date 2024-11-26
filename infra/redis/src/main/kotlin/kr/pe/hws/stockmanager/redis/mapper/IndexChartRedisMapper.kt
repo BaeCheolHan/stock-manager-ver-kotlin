@@ -6,7 +6,7 @@ import kr.pe.hws.stockmanager.redis.hash.ChartDetailRedisEntity
 import kr.pe.hws.stockmanager.redis.hash.ChartSummaryRedisEntity
 import kr.pe.hws.stockmanager.redis.hash.IndexChartRedisEntity
 
-object IndexChartMapper {
+object IndexChartRedisMapper {
     fun toRedisEntity(indexChart: IndexChart): IndexChartRedisEntity {
         return IndexChartRedisEntity(
             id = indexChart.indexType,

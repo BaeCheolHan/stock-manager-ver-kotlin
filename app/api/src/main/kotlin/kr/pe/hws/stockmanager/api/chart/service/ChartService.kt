@@ -3,7 +3,7 @@ package kr.pe.hws.stockmanager.api.chart.service
 import kr.pe.hws.stockmanager.api.chart.dto.IndexChartResponseDto
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
-import kr.pe.hws.stockmanager.redis.mapper.IndexChartMapper
+import kr.pe.hws.stockmanager.redis.mapper.IndexChartRedisMapper
 import kr.pe.hws.stockmanager.redis.repository.IndexChartRepository
 import kr.pe.hws.stockmanager.webadapter.fetcher.KisApiFetcher
 import org.springframework.stereotype.Service
@@ -40,14 +40,14 @@ class ChartService(
     // Redis에서 가져오거나 API 호출 후 저장하는 메서드
     private fun getOrFetchIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
         return indexChartRepository.findById(indexType.id)
-            .map(IndexChartMapper::fromRedisEntity)
+            .map(IndexChartRedisMapper::fromRedisEntity)
             .orElseGet { fetchAndSaveNewIndexChart(indexType) }
     }
 
     // Redis에 저장하고 API 호출을 처리하는 메서드
     private fun fetchAndSaveNewIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
         val response = fetchIndexChartByType(indexType) ?: throw IllegalStateException("API response for $indexType was null")
-        val redisEntity = IndexChartMapper.toRedisEntity(response)
+        val redisEntity = IndexChartRedisMapper.toRedisEntity(response)
         indexChartRepository.save(redisEntity)
         return response
     }

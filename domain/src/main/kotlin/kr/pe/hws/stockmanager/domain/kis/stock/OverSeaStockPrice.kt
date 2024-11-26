@@ -5,7 +5,7 @@ import java.math.BigDecimal
 data class OverSeaStockPrice(
     // 기본 정보
     val symbol: String,       // 종목 코드 (예: AAPL)
-    val name: String,         // 조회된 종목명
+    val stockName: String,         // 조회된 종목명
     val market: String,       // 시장 코드 (예: NAS, NYS)
 
     // 가격 정보

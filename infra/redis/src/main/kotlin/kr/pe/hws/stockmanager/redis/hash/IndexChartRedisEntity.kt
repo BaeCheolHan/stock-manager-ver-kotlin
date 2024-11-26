@@ -3,15 +3,20 @@ package kr.pe.hws.stockmanager.redis.hash
 import java.io.Serializable
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
+import org.springframework.data.redis.core.TimeToLive
 import org.springframework.data.redis.core.index.Indexed
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 
 @RedisHash("IndexChart")
 data class IndexChartRedisEntity(
     @Id
     val id: String, // Redis Key로 사용할 ID (예: indexType)
     val summary: ChartSummaryRedisEntity,
-    val details: List<ChartDetailRedisEntity>
+    val details: List<ChartDetailRedisEntity>,
+
+    @TimeToLive(unit = TimeUnit.MINUTES)
+    val expiration: Int = 3,
 ) : Serializable
 
 data class ChartSummaryRedisEntity(

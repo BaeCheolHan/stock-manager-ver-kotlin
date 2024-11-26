@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 class ChartController (
     private val service: ChartService
 ){
-    @GetMapping("/index")
+    @GetMapping("/v1/index")
     fun getIndexCharts(): IndexChartResponseDto {
         return service.getIndexCharts()
     }

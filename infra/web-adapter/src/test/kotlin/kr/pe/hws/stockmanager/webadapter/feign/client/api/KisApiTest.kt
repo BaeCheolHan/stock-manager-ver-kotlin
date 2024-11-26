@@ -51,7 +51,7 @@ class KisApiTest {
     }
 
     @Test
-    fun getKrStockVolumeRank() {
+    fun getKrVolumeRank() {
         val data = fetcher.fetchKrStockVolumeRank("0000")
         Assertions.assertNotNull(data)
         println(data)

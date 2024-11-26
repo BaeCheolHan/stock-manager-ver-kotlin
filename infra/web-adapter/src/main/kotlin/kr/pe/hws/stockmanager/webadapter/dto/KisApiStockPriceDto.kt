@@ -354,7 +354,7 @@ object KisApiStockPriceDto {
     fun OverSeaStockPriceDto.toDomain(): OverSeaStockPrice {
         return OverSeaStockPrice(
             symbol = extractSymbolFromRsym(this.rsym) ?: throw IllegalArgumentException("Symbol cannot be null"),
-            name = this.rsym ?: "Unknown", // 종목명이 없을 경우 기본값
+            stockName = this.rsym ?: "Unknown", // 종목명이 없을 경우 기본값
             market = extractMarketFromSymbol(this.rsym), // rsym에서 시장 코드 추출
             openPrice = this.open?.stripTrailingZeros(),
             highPrice = this.high?.stripTrailingZeros(),
