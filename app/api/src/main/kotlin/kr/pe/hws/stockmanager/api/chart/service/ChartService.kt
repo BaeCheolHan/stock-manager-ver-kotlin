@@ -7,6 +7,7 @@ import kr.pe.hws.stockmanager.redis.mapper.IndexChartMapper
 import kr.pe.hws.stockmanager.redis.repository.IndexChartRepository
 import kr.pe.hws.stockmanager.webadapter.fetcher.KisApiFetcher
 import org.springframework.stereotype.Service
+import java.util.concurrent.CompletableFuture
 
 @Service
 class ChartService(
@@ -53,5 +54,37 @@ class ChartService(
             IndexType.KOSPI, IndexType.KOSDAQ -> fetcher.fetchKrIndexChart(indexType)
             IndexType.SNP500, IndexType.NASDAQ, IndexType.DAW, IndexType.PHILADELPHIA -> fetcher.fetchOverSeaIndexChart(indexType)
         }
+    }
+
+    fun getIndexChartsAsync(): IndexChartResponseDto {
+        val indexTypes = listOf(
+            IndexType.KOSPI,
+            IndexType.KOSDAQ,
+            IndexType.SNP500,
+            IndexType.NASDAQ,
+            IndexType.DAW,
+            IndexType.PHILADELPHIA
+        )
+
+        val futures = indexTypes.associateWith { indexType ->
+            CompletableFuture.supplyAsync {
+                indexChartRepository.findById(indexType.id)
+                    .map(IndexChartMapper::fromRedisEntity)
+                    .orElseGet { fetchAndSaveNewIndexChart(indexType) }
+            }
+        }
+
+        CompletableFuture.allOf(*futures.values.toTypedArray()).join()
+
+        val indexCharts = futures.mapValues { it.value.join() }
+
+        return IndexChartResponseDto(
+            kospiChart = indexCharts[IndexType.KOSPI]!!,
+            kosdaqChart = indexCharts[IndexType.KOSDAQ]!!,
+            snp500Chart = indexCharts[IndexType.SNP500]!!,
+            nasdaqChart = indexCharts[IndexType.NASDAQ]!!,
+            dawChart = indexCharts[IndexType.DAW]!!,
+            philadelphiaChart = indexCharts[IndexType.PHILADELPHIA]!!
+        )
     }
 }
