@@ -1,112 +1,37 @@
-name: Create Release
+name: AI Code Review
 
 on:
   pull_request:
-    types: [closed] # PR이 닫혔을 때 트리거
+    paths:
+      - '**/*.kt'  # Kotlin 파일에 대해 실행
 
 jobs:
-  create-release:
-    if: github.event.pull_request.merged == true # PR이 병합된 경우에만 실행
+  code-review:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get latest tag
-        id: get-latest-tag
-        run: |
-          # 최신 태그 가져오기
-          TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "latest-tag=$TAG" >> $GITHUB_ENV
-
-      - name: Determine version increment
-        id: determine-version
-        run: |
-          # 라벨 확인
-          LABELS=$(echo "${{ github.event.pull_request.labels[*].name }}")
-          echo "Found labels: $LABELS"
-          
-          # 최신 태그 기본값 설정
-          if [ -z "${{ env.latest-tag }}" ]; then
-            LATEST_TAG="v0.0.0"
-          else
-            LATEST_TAG="${{ env.latest-tag }}"
-          fi
-          
-          # 태그 숫자 분리
-          MAJOR=$(echo $LATEST_TAG | cut -d. -f1 | cut -c2-)
-          MINOR=$(echo $LATEST_TAG | cut -d. -f2)
-          PATCH=$(echo $LATEST_TAG | cut -d. -f3)
-          
-          # 라벨에 따라 증가
-          if [[ $LABELS == *"MAJOR"* ]]; then
-            MAJOR=$((MAJOR + 1))
-            MINOR=0
-            PATCH=0
-          elif [[ $LABELS == *"MINOR"* ]]; then
-            MINOR=$((MINOR + 1))
-            PATCH=0
-          else
-            PATCH=$((PATCH + 1))
-          fi
-          
-          # 다음 태그 계산
-          NEXT_TAG="v${MAJOR}.${MINOR}.${PATCH}"
-          echo "next-tag=$NEXT_TAG" >> $GITHUB_ENV
-          echo "Calculated next tag: $NEXT_TAG"
-
-      - name: Extract Release Notes from PR
-        id: extract-notes
-        run: |
-          # PR 본문 가져오기
-          echo "${{ github.event.pull_request.body }}" > pr_body.txt
-
-          # 1. 릴리스 노트 섹션 추출 (Summary by CodeRabbit)
-          RELEASE_NOTES=$(grep -A 10 '^Summary by CodeRabbit' pr_body.txt | sed '1d;/^###/,$d;/^<!--/d')
-
-          # 2. 동적으로 추가된 CodeRabbit 텍스트 추출 (🐰 또는 기타 패턴 포함)
-          CODERABBIT_TEXT=$(grep -A 10 '^[🐇|🐰]' pr_body.txt)
-
-          # 3. 릴리스 노트가 없는 경우 기본값 설정
-          if [ -z "$RELEASE_NOTES" ]; then
-            RELEASE_NOTES="No release notes provided. This is an auto-generated release."
-          fi
-
-          # 4. 중복 제거
-          FINAL_NOTES=$(echo -e "${RELEASE_NOTES}\n\n${CODERABBIT_TEXT}" | sort | uniq)
-
-          # 5. 출력 및 디버깅
-          echo -e "$FINAL_NOTES" > final_notes.txt
-          cat final_notes.txt
-
-          # 6. 환경 변수 저장
-          echo "release-notes=$(cat final_notes.txt | jq -R -s .)" >> $GITHUB_ENV
-          echo "Extracted and enhanced release notes:\n$(cat final_notes.txt)"
-
-      - name: Set Git user
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-
-      - name: Create Git Tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
-          git tag -a "${{ env.next-tag }}" -m "Release ${{ env.next-tag }}"
-          git push origin "${{ env.next-tag }}"
-
-      - name: Publish Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 1. 코드와 submodule 체크아웃
+      - name: Checkout code including submodules
+        uses: actions/checkout@v3  # 리포지토리 코드 체크아웃
         with:
-          tag_name: ${{ env.next-tag }}
-          release_name: "Release ${{ env.next-tag }}"
-          body: "${{ env.release-notes }}"
-          draft: false
-          prerelease: false
+          submodules: 'true'  # submodule 포함하여 체크아웃
+          token: ${{ secrets.ACCOUNT_TOKEN }}  # GitHub Token을 사용하여 인증 처리
+
+      # 2. AI 기반 PR 리뷰어 실행
+      - name: AI PR Review and Summary
+        uses: coderabbitai/ai-pr-reviewer@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCOUNT_TOKEN }}  # GitHub 인증을 위한 토큰
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # OpenAI API 키
+        with:
+          debug: true  # 디버그 정보 출력
+          language: ko-KR  # 언어 설정: 한국어
+          max_files: 20  # 최대 20개의 파일만 리뷰
+          openai_heavy_model: gpt-4o
+          openai_light_model: gpt-4o
+          prompt: "Please review the following Kotlin code and provide suggestions for improvements. Provide your review in Korean:\n\n"  # 프롬프트 명시
+
+      # 3. 디버깅을 위한 마지막 단계
+      - name: 디버깅 정보 출력 (필요한 경우)
+        if: ${{ !cancelled() }}
+        uses: hmarr/debug-action@v3
