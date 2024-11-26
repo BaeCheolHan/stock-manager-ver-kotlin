@@ -68,19 +68,19 @@ jobs:
           # 1. 릴리스 노트 섹션 ("Summary by CodeRabbit") 추출
           RELEASE_NOTES=$(awk '/^Summary by CodeRabbit/,/^###|^<!--/' pr_body.txt | sed '1d;$d')
 
-          # 3. 동적으로 추가된 CodeRabbit 텍스트 추출 (🐇 또는 기타 패턴 포함)
+          # 2. 동적으로 추가된 CodeRabbit 텍스트 추출 (🐇 또는 기타 패턴 포함)
           CODERABBIT_TEXT=$(awk '/^[🐇|🐰]/,/^$/' pr_body.txt)
 
-          # 릴리스 노트가 없는 경우 기본값 설정
+          # 3. 릴리스 노트가 없는 경우 기본값 설정
           if [ -z "$RELEASE_NOTES" ]; then
             RELEASE_NOTES="No release notes provided. This is an auto-generated release."
           fi
 
-          # 최종 릴리스 노트 생성
+          # 4. 최종 릴리스 노트 생성
           FINAL_NOTES="${RELEASE_NOTES}\n\n${CODERABBIT_TEXT}"
 
-          # 출력 환경 변수 저장
-          echo "release-notes=$FINAL_NOTES" >> $GITHUB_ENV
+          # 5. 환경 변수 저장 (이스케이프 처리)
+          echo "release-notes=$(printf '%q' "$FINAL_NOTES")" >> $GITHUB_ENV
           echo "Extracted and enhanced release notes:\n$FINAL_NOTES"
 
       - name: Set Git user
