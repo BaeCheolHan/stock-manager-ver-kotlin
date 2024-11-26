@@ -1,7 +1,7 @@
 package kr.pe.hws.stockmanager.webadapter.fetcher
 
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
-import kr.pe.hws.stockmanager.domain.kis.index.IndexChart
+import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
 import kr.pe.hws.stockmanager.domain.kis.stock.StockVolumeRank
 import kr.pe.hws.stockmanager.domain.kis.stock.KrStockPrice
 import kr.pe.hws.stockmanager.domain.kis.stock.OverSeaStockPrice
@@ -25,11 +25,11 @@ class KisApiFetcher(
     private val kisApiFeignClient: KisApiFeignClient
 ) {
 
-    fun fetchKrIndexChart(indexType: IndexType): IndexChart.IndexChart {
+    fun fetchKrIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
         return fetchIndexChart("U", indexType, KisApiTransactionId.KR_INDEX_CHART_PRICE)
     }
 
-    fun fetchOverSeaIndexChart(indexType: IndexType): IndexChart.IndexChart {
+    fun fetchOverSeaIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
         return fetchIndexChart("N", indexType, KisApiTransactionId.OVER_SEA_INDEX_CHART_PRICE)
     }
 
@@ -69,7 +69,7 @@ class KisApiFetcher(
     }
 
     // 공통 처리 로직
-    private fun fetchIndexChart(marketCode: String, indexType: IndexType, transactionId: KisApiTransactionId): IndexChart.IndexChart {
+    private fun fetchIndexChart(marketCode: String, indexType: IndexType, transactionId: KisApiTransactionId): IndexChartDomain.IndexChart {
         return fetchApiData(
             transactionId = transactionId.getTransactionId(),
             requestCreator = { createIndexChartRequest(marketCode, indexType.code, "D") },
