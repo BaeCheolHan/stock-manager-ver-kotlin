@@ -1,6 +1,7 @@
 package kr.pe.hws.stockmanager.domain.kis.stock
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Domain 객체: 국내 주식 가격
@@ -90,7 +91,13 @@ data class KrStockPrice(
      */
     fun priceChangeRate(): BigDecimal? {
         if (currentPrice != null && previousClosePrice != null) {
-            return (currentPrice - previousClosePrice) / previousClosePrice * BigDecimal(100)
+            if (previousClosePrice.compareTo(BigDecimal.ZERO) == 0) {
+                return null // 전일 종가가 0이면 비율 계산 불가
+            }
+            return currentPrice
+                .subtract(previousClosePrice) // (현재가 - 전일 종가)
+                .divide(previousClosePrice, 4, RoundingMode.HALF_UP) // / 전일 종가 (소수점 4자리 반올림)
+                .multiply(BigDecimal(100)) // * 100 (백분율 계산)
         }
         return null
     }

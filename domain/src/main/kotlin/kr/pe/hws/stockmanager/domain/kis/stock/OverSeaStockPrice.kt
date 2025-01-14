@@ -1,6 +1,8 @@
 package kr.pe.hws.stockmanager.domain.kis.stock
 
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 
 data class OverSeaStockPrice(
     // 기본 정보
@@ -78,7 +80,10 @@ data class OverSeaStockPrice(
      */
     fun priceChangeRate(): BigDecimal? {
         if (currentPrice != null && previousClosePrice != null) {
-            return (currentPrice - previousClosePrice) / previousClosePrice * BigDecimal(100)
+            return currentPrice
+                .subtract(previousClosePrice) // 현재가 - 전일 종가
+                .divide(previousClosePrice, 4, RoundingMode.HALF_UP) // 나누기 (소수점 4자리, 반올림)
+                .multiply(BigDecimal(100)) // 100을 곱해 비율 계산
         }
         return null
     }
@@ -89,11 +94,13 @@ data class OverSeaStockPrice(
      */
     fun convertedPriceChangeRate(): BigDecimal? {
         if (convertedPrice != null && previousConvertedPrice != null) {
-            return (convertedPrice - previousConvertedPrice) / previousConvertedPrice * BigDecimal(100)
+            val mathContext = MathContext(4, RoundingMode.HALF_UP) // 소수점 4자리, 반올림
+            return convertedPrice.subtract(previousConvertedPrice)
+                .divide(previousConvertedPrice, mathContext)
+                .multiply(BigDecimal(100))
         }
         return null
     }
-
     /**
      * 52주 최고가 여부를 확인합니다.
      * @return 현재가가 52주 최고가와 동일하면 true, 그렇지 않으면 false
