@@ -20,7 +20,7 @@ class ControllerAdvice {
     @ExceptionHandler(Exception::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     fun handleInternalServerError(e: Exception): ResponseEntity<BaseResponse> {
-        log.error(e.message, e)
+        log.error("An internal server error occurred", e)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(BaseResponse(ResponseCode.INTERNAL_ERROR, ResponseCode.INTERNAL_ERROR.message))
     }
@@ -33,6 +33,6 @@ class ControllerAdvice {
         }
 
         return ResponseEntity.status(status)
-            .body(BaseResponse(ResponseCode.INTERNAL_ERROR, e.message ?: "Unknown error"))
+            .body(BaseResponse(e.code, e.message ?: "Unknown error"))
     }
 }
