@@ -1,4 +1,4 @@
-package kr.pe.hws.stockmanager.common
+package kr.pe.hws.stockmanager.common.logger
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

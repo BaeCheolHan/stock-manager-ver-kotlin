@@ -2,7 +2,7 @@ package kr.pe.hws.stockmanager.api.volumerank.service
 
 import kr.pe.hws.stockmanager.api.utils.mapper.KrVolumeRankMapper
 import kr.pe.hws.stockmanager.api.volumerank.dto.KrVolumeRankResponseDto
-import kr.pe.hws.stockmanager.common.LogHelper.getLogger
+import kr.pe.hws.stockmanager.common.logger.LogHelper.getLogger
 import kr.pe.hws.stockmanager.domain.kis.volumerank.KrVolumeRankDomain
 import kr.pe.hws.stockmanager.redis.mapper.KrVolumeRankRedisMapper
 import kr.pe.hws.stockmanager.redis.repository.KrVolumeRankRepository
