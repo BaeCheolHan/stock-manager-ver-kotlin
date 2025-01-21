@@ -1,5 +1,6 @@
 package kr.pe.hws.stockmanager.api.chart.dto
 
+import kr.pe.hws.stockmanager.api.config.dto.BaseResponse
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
 
 data class IndexChartResponseDto (
@@ -11,4 +12,5 @@ data class IndexChartResponseDto (
 
     val dawChart: IndexChartDomain.IndexChart,
     val philadelphiaChart: IndexChartDomain.IndexChart,
+    val baseResponse: BaseResponse
 )

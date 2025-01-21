@@ -5,7 +5,7 @@ import java.math.BigDecimal
 /**
  * 주식 거래량 랭킹 정보 Response DTO
  */
-data class KrVolumeRankResponseDto(
+data class VolumeRankDto(
     val stockName: String,                   // 종목명
     val stockCode: String,                   // 종목 코드
     val rank: Int,                           // 순위
