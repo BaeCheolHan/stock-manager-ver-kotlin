@@ -1,6 +1,7 @@
 package kr.pe.hws.stockmanager.api.chart.service
 
 import kr.pe.hws.stockmanager.api.chart.dto.IndexChartResponseDto
+import kr.pe.hws.stockmanager.api.config.dto.BaseResponse
 import kr.pe.hws.stockmanager.common.logger.LogHelper.getLogger
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
@@ -36,7 +37,8 @@ class ChartService(
             snp500Chart = indexCharts[IndexType.SNP500]!!,
             nasdaqChart = indexCharts[IndexType.NASDAQ]!!,
             dawChart = indexCharts[IndexType.DAW]!!,
-            philadelphiaChart = indexCharts[IndexType.PHILADELPHIA]!!
+            philadelphiaChart = indexCharts[IndexType.PHILADELPHIA]!!,
+            baseResponse = BaseResponse.success()
         )
     }
 

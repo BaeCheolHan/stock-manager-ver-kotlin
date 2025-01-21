@@ -1,11 +1,11 @@
 package kr.pe.hws.stockmanager.api.utils.mapper
 
-import kr.pe.hws.stockmanager.api.volumerank.dto.KrVolumeRankResponseDto
+import kr.pe.hws.stockmanager.api.volumerank.dto.VolumeRankDto
 import kr.pe.hws.stockmanager.domain.kis.volumerank.KrVolumeRankDomain
 
 object KrVolumeRankMapper {
-    fun toResponse(domain: KrVolumeRankDomain): KrVolumeRankResponseDto {
-        return KrVolumeRankResponseDto(
+    fun toResponse(domain: KrVolumeRankDomain): VolumeRankDto {
+        return VolumeRankDto(
             stockName = domain.stockName,
             stockCode = domain.stockCode,
             rank = domain.rank,
