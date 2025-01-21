@@ -1,6 +1,6 @@
 package kr.pe.hws.stockmanager.webadapter.fetcher
 
-import kr.pe.hws.stockmanager.common.LogHelper.getLogger
+import kr.pe.hws.stockmanager.common.logger.LogHelper.getLogger
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
 import kr.pe.hws.stockmanager.domain.kis.stock.KrStockPrice
@@ -27,20 +27,20 @@ class KisApiFetcher(
 ) {
     private val log = getLogger<KisApiFetcher>()
 
-    fun fetchKrIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
+    fun fetchKrIndexChart(indexType: IndexType, chartType: String): IndexChartDomain.IndexChart {
         return fetchAndHandle(
             transactionId = KisApiTransactionId.KR_INDEX_CHART_PRICE.getTransactionId(),
-            request = { createIndexChartRequest("U", indexType.code, "D") },
+            request = { createIndexChartRequest("U", indexType.code, chartType) },
             apiCall = kisApiFeignClient::getKrInquireDailyIndexChart
         ) { response ->
             (response as KisApiIndexChartDto.KrIndexChartResponse).toDomain(indexType)
         }
     }
 
-    fun fetchOverSeaIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
+    fun fetchOverSeaIndexChart(indexType: IndexType, chartType: String): IndexChartDomain.IndexChart {
         return fetchAndHandle(
             transactionId = KisApiTransactionId.OVER_SEA_INDEX_CHART_PRICE.getTransactionId(),
-            request = { createIndexChartRequest("N", indexType.code, "D") },
+            request = { createIndexChartRequest("N", indexType.code, chartType) },
             apiCall = kisApiFeignClient::getKrInquireDailyIndexChart
         ) { response ->
             (response as KisApiIndexChartDto.KrIndexChartResponse).toDomain(indexType)

@@ -1,7 +1,7 @@
 package kr.pe.hws.stockmanager.api.chart.service
 
 import kr.pe.hws.stockmanager.api.chart.dto.IndexChartResponseDto
-import kr.pe.hws.stockmanager.common.LogHelper.getLogger
+import kr.pe.hws.stockmanager.common.logger.LogHelper.getLogger
 import kr.pe.hws.stockmanager.domain.kis.constants.IndexType
 import kr.pe.hws.stockmanager.domain.kis.index.IndexChartDomain
 import kr.pe.hws.stockmanager.redis.mapper.IndexChartRedisMapper
@@ -16,7 +16,7 @@ class ChartService(
 ) {
     private val log = getLogger<ChartService>()
 
-    fun getIndexCharts(): IndexChartResponseDto {
+    fun getIndexCharts(chartType: String): IndexChartResponseDto {
         val indexTypes = listOf(
             IndexType.KOSPI,
             IndexType.KOSDAQ,
@@ -27,7 +27,7 @@ class ChartService(
         )
 
         // 모든 지수를 처리하여 Map으로 저장
-        val indexCharts = indexTypes.associateWith { indexType -> getOrFetchIndexChart(indexType) }
+        val indexCharts = indexTypes.associateWith { indexType -> getOrFetchIndexChart(indexType, chartType) }
 
         // 결과를 DTO로 변환
         return IndexChartResponseDto(
@@ -41,18 +41,18 @@ class ChartService(
     }
 
     // Redis에서 가져오거나 API 호출 후 저장하는 메서드
-    private fun getOrFetchIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
+    private fun getOrFetchIndexChart(indexType: IndexType, chartType: String): IndexChartDomain.IndexChart {
         return indexChartRepository.findById(indexType.id)
             .map(IndexChartRedisMapper::fromRedisEntity)
-            .orElseGet { fetchAndSaveNewIndexChart(indexType) }
+            .orElseGet { fetchAndSaveNewIndexChart(indexType, chartType) }
     }
 
     // Redis에 저장하고 API 호출을 처리하는 메서드
-    private fun fetchAndSaveNewIndexChart(indexType: IndexType): IndexChartDomain.IndexChart {
-        val response = fetchIndexChartByType(indexType)
+    private fun fetchAndSaveNewIndexChart(indexType: IndexType, chartType: String): IndexChartDomain.IndexChart {
+        val response = fetchIndexChartByType(indexType, chartType)
             ?: throw IllegalStateException("API response for $indexType was null")
 
-        val redisEntity = IndexChartRedisMapper.toRedisEntity(response)
+        val redisEntity = IndexChartRedisMapper.toRedisEntity(response, chartType)
         try {
             indexChartRepository.save(redisEntity)
         } catch (ex: Exception) {
@@ -63,10 +63,10 @@ class ChartService(
     }
 
     // IndexType에 따른 API 호출
-    private fun fetchIndexChartByType(indexType: IndexType): IndexChartDomain.IndexChart? {
+    private fun fetchIndexChartByType(indexType: IndexType, chartType: String): IndexChartDomain.IndexChart? {
         return when (indexType) {
-            IndexType.KOSPI, IndexType.KOSDAQ -> fetcher.fetchKrIndexChart(indexType)
-            IndexType.SNP500, IndexType.NASDAQ, IndexType.DAW, IndexType.PHILADELPHIA -> fetcher.fetchOverSeaIndexChart(indexType)
+            IndexType.KOSPI, IndexType.KOSDAQ -> fetcher.fetchKrIndexChart(indexType, chartType)
+            IndexType.SNP500, IndexType.NASDAQ, IndexType.DAW, IndexType.PHILADELPHIA -> fetcher.fetchOverSeaIndexChart(indexType, chartType)
         }
     }
 }

@@ -7,9 +7,9 @@ import kr.pe.hws.stockmanager.redis.hash.ChartSummaryRedisEntity
 import kr.pe.hws.stockmanager.redis.hash.IndexChartRedisEntity
 
 object IndexChartRedisMapper {
-    fun toRedisEntity(indexChart: IndexChart): IndexChartRedisEntity {
+    fun toRedisEntity(indexChart: IndexChart, chartType: String): IndexChartRedisEntity {
         return IndexChartRedisEntity(
-            id = indexChart.indexType,
+            id = "${indexChart.indexType}_${chartType}",
             summary = ChartSummaryRedisEntity(
                 currentPrice = indexChart.summary.currentPrice,
                 highPrice = indexChart.summary.highPrice,

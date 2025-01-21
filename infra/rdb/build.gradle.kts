@@ -14,7 +14,7 @@ dependencies {
     api(Libraries.Spring.bootStarterDataJpa)
     implementation("org.mariadb.jdbc:mariadb-java-client:3.3.2")
     implementation(project(Modules.domain))
-
+    implementation(project(Modules.Infra.common))
     // QueryDSL 설정
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
